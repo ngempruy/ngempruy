@@ -7,7 +7,7 @@ The project was created with Yarn or npm (see `packageManager` / the lockfile). 
 ## Commands
 
 ```bash
-yarn start                                   # app on :3000, needs no wallet or .env
+yarn next:dev                                # app on :3000, needs no wallet or .env
 yarn configure --modules rwa,payments        # pick modules (prunes the rest; commit first)
 yarn hardhat:test                            # contracts (testnet fork + MockHts for KYC)
 yarn shared:test                             # resolver, configure, audit format
