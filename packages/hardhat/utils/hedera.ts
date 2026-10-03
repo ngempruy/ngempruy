@@ -31,7 +31,7 @@ export async function sdkClientFromDeployer(chainId: number, privateKeyHex: stri
 }
 
 /** Hedera-native ids (topics, HTS tokens) per chain, read by the frontend. */
-export type HederaResources = { auditTopicId?: string; rwaTokenId?: string };
+export type HederaResources = { auditTopicId?: string; rwaTokenId?: string; rwaUsdcPair?: string };
 
 const RESOURCES_FILE = path.join(__dirname, "../../nextjs/contracts/hederaResources.json");
 
