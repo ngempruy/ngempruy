@@ -1,7 +1,10 @@
 import type { ComponentType } from "react";
+import { AuditFeed } from "./core/AuditFeed";
 
 /**
- * UI per module id. A module without an entry still gets its page (title,
- * description, setup status); module PRs register their component here.
+ * UI per module id. Views render even while setup is incomplete (`ready` is false),
+ * so read-only parts keep working; they must disable anything that needs the missing env.
  */
-export const moduleViews: Record<string, ComponentType> = {};
+export const moduleViews: Record<string, ComponentType<{ ready: boolean }>> = {
+  core: AuditFeed,
+};

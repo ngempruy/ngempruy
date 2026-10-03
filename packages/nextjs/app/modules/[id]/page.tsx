@@ -27,7 +27,8 @@ export default async function ModulePage({ params }: Props) {
         <h1 className="text-3xl font-bold mb-2">{mod.title}</h1>
         <p className="m-0 text-base-content/70">{mod.description}</p>
       </div>
-      {missing.length > 0 ? <ModuleSetupHint missing={missing} /> : View && <View />}
+      {missing.length > 0 && <ModuleSetupHint missing={missing} />}
+      {View && <View ready={missing.length === 0} />}
     </div>
   );
 }
