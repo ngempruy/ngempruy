@@ -18,6 +18,10 @@ export type ModuleManifest = {
   /** Contract names deployed for this module, in deploy order. */
   contracts: string[];
   env: EnvVar[];
+  /** Repo-relative files and folders owned by this module; `yarn configure` deletes them when unselected. */
+  paths: string[];
+  /** package.json script names owned by this module (root and workspaces). */
+  scripts: string[];
 };
 
 export type IntegrationRecipe = {
@@ -28,14 +32,25 @@ export type IntegrationRecipe = {
   when: string[];
   contracts: string[];
   env: EnvVar[];
+  paths: string[];
+  scripts: string[];
 };
 
 export function defineModule(m: Partial<ModuleManifest> & Pick<ModuleManifest, "id" | "title" | "description">) {
-  return { requires: [], consumes: [], provides: [], contracts: [], env: [], ...m } satisfies ModuleManifest;
+  return {
+    requires: [],
+    consumes: [],
+    provides: [],
+    contracts: [],
+    env: [],
+    paths: [],
+    scripts: [],
+    ...m,
+  } satisfies ModuleManifest;
 }
 
 export function defineIntegration(
   r: Partial<IntegrationRecipe> & Pick<IntegrationRecipe, "id" | "title" | "description" | "when">,
 ) {
-  return { contracts: [], env: [], ...r } satisfies IntegrationRecipe;
+  return { contracts: [], env: [], paths: [], scripts: [], ...r } satisfies IntegrationRecipe;
 }
