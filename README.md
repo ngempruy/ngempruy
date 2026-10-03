@@ -200,9 +200,10 @@ Kit-contract events are audit-logged automatically once the contract is listed i
 yarn shared:test     # resolver, configure, audit format
 yarn hardhat:test    # contracts; HTS is emulated on a testnet fork, KYC through a MockHts at 0x167
 yarn lint && yarn format:check && yarn next:check-types
+yarn harness:validate # Hedera Harness recipe: static, command and route tiers (.harness/)
 ```
 
-CI runs all of the above for the full kit, for every single-module configuration, and for a fresh `create-scaffold-hbar` scaffold with both Yarn and npm (lint, build, boot, routes).
+CI runs all of the above (including the Harness recipe) for the full kit, for every single-module configuration, and for a fresh `create-scaffold-hbar` scaffold with both Yarn and npm (lint, build, boot, routes).
 
 ## License
 
