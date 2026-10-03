@@ -2,6 +2,7 @@
 import type { ComponentType } from "react";
 import coreView from "./core";
 import dexView from "./dex";
+import flashloanView from "./flashloan";
 import paymentsView from "./payments";
 import rwaView from "./rwa";
 
@@ -11,4 +12,5 @@ export const moduleViews: Record<string, ComponentType<{ ready: boolean }>> = {
   rwa: rwaView,
   dex: dexView,
   payments: paymentsView,
+  flashloan: flashloanView,
 };
