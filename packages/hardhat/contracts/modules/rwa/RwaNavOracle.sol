@@ -36,18 +36,18 @@ contract RwaNavOracle is AccessControl {
     }
 
     /// @param reportUri Where the signed appraisal lives (IPFS, HCS message, URL).
-    function postNav(uint256 navPerUnit, string calldata reportUri) external onlyRole(APPRAISER_ROLE) {
-        if (navPerUnit == 0) revert ZeroNav();
+    function postNav(uint256 newNav, string calldata reportUri) external onlyRole(APPRAISER_ROLE) {
+        if (newNav == 0) revert ZeroNav();
         uint256 previous = nav;
         if (previous != 0 && maxDeviationBps != 0) {
-            uint256 diff = navPerUnit > previous ? navPerUnit - previous : previous - navPerUnit;
+            uint256 diff = newNav > previous ? newNav - previous : previous - newNav;
             if (diff * 10_000 > previous * maxDeviationBps) {
-                revert DeviationTooHigh(previous, navPerUnit, maxDeviationBps);
+                revert DeviationTooHigh(previous, newNav, maxDeviationBps);
             }
         }
-        nav = navPerUnit;
+        nav = newNav;
         updatedAt = uint64(block.timestamp);
-        emit NavPosted(++round, navPerUnit, reportUri, msg.sender);
+        emit NavPosted(++round, newNav, reportUri, msg.sender);
     }
 
     function setMaxDeviationBps(uint16 maxDeviationBps_) external onlyRole(DEFAULT_ADMIN_ROLE) {
