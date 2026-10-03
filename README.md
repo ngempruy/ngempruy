@@ -63,7 +63,7 @@ The scaffolded app is pre-wired to these ids (`packages/nextjs/contracts/`), so 
 ```bash
 npx create-scaffold-hbar@latest --template ngempruy/ngempruy
 cd <your-project>
-yarn start                     # http://localhost:3000, works with no wallet and no .env
+yarn next:dev                  # http://localhost:3000, works with no wallet and no .env
 ```
 
 Then go on-chain:

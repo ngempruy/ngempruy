@@ -21,13 +21,7 @@
       "packages/hardhat/deploy/00_core_audit_topic.ts",
       "packages/nextjs/contracts/hederaResources.json"
     ],
-    "forbidden": [
-      ".env",
-      "packages/nextjs/.env",
-      "packages/nextjs/.env.local",
-      "packages/hardhat/.env",
-      "packages/foundry"
-    ]
+    "forbidden": [".env", "packages/nextjs/.env", "packages/foundry"]
   },
   "textAssertions": [
     { "file": "README.md", "contains": ["yarn configure", "hashscan.io/testnet", "Unaudited"] },

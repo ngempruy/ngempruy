@@ -99,8 +99,10 @@ jobs:
         run: |
           $PM run next:serve &
           timeout 60 bash -c 'until curl -sf http://localhost:3000 >/dev/null; do sleep 2; done'
-          for route in / /modules/core /modules/rwa /modules/payments; do
-            curl -sf -o /dev/null "http://localhost:3000$route" && echo "$route OK"
+          for route in / /modules/core /modules/rwa /modules/payments /modules/dex /modules/flashloan; do
+            # `|| exit` so any failing route fails the step, not only the last one
+            curl -sf -o /dev/null "http://localhost:3000$route" || { echo "$route failed"; exit 1; }
+            echo "$route OK"
           done
 
   harness:
