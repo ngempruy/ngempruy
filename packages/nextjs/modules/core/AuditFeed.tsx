@@ -12,7 +12,7 @@ export const AuditFeed = async () => {
   if (!topicId) {
     return (
       <p className="m-0 text-sm">
-        No audit topic yet. Deploy with <code>yarn deploy --network hederaTestnet</code> to create one.
+        No audit topic yet. Deploy with <code>yarn hardhat:deploy --network hederaTestnet</code> to create one.
       </p>
     );
   }

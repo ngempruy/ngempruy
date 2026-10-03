@@ -21,7 +21,8 @@ const deployAuditTopic: DeployFunction = async function (hre: HardhatRuntimeEnvi
   }
 
   const privateKey = process.env.__RUNTIME_DEPLOYER_PRIVATE_KEY;
-  if (!privateKey) throw new Error("Deployer key missing. Run the deploy through `yarn deploy` so it gets decrypted.");
+  if (!privateKey)
+    throw new Error("Deployer key missing. Run the deploy through `yarn hardhat:deploy` so it gets decrypted.");
 
   const { client, key } = await sdkClientFromDeployer(chainId, privateKey);
   try {

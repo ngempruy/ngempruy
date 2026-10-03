@@ -17,7 +17,7 @@ export const core = defineModule({
     },
     {
       key: "NEXT_PUBLIC_AUDIT_TOPIC_ID",
-      description: "Overrides the HCS audit topic that `yarn deploy` records in hederaResources.json",
+      description: "Overrides the HCS audit topic that `yarn hardhat:deploy` records in hederaResources.json",
       required: false,
     },
   ],
