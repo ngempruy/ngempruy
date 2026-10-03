@@ -1,228 +1,132 @@
 # Hedera DeFi Kit
 
-A modular, provider-agnostic DeFi starter for Hedera, built on [Scaffold-HBAR](https://docs.hedera.com/solutions/tools/scaffold-hbar).
-Pick the modules you need, swap providers behind shared interfaces, and let **integration recipes** compose them.
+Modular DeFi building blocks for Hedera: tokenized real-world assets, DEX liquidity, flash loans and pay-per-request APIs. Modules compose through shared interfaces, and every on-chain action is recorded on one HCS audit topic. Built on [Scaffold-HBAR](https://docs.hedera.com/solutions/tools/scaffold-hbar).
 
 ```bash
 npx create-scaffold-hbar@latest --template ngempruy/ngempruy
 ```
 
-> **Unaudited, for education and testnet use.** Do not put real value behind these contracts.
+> **Unaudited.** For education and testnet use only.
 
-## What makes it different
-
-Each module is useful alone, but the point is how they compose through Hedera-native services:
+## How it fits together
 
 ```mermaid
 flowchart LR
-  subgraph rwa [RWA module]
-    T[RwaToken<br/>HTS token, KYC key held by the contract]
-    N[RwaNavOracle<br/>appraiser-posted NAV]
-  end
-  subgraph pay [Payments module]
-    X[x402 paywall<br/>Blocky402 facilitator pays the fee]
-  end
-  subgraph dex [DEX module]
-    S[SaucerSwap adapter<br/>ISwapAdapter]
-  end
-  T -- priced by --> N
-  T -- liquidity / exit --> S
-  X -- sells data --> N
-  T & N & X & S -- every event --> H[(HCS audit topic)]
-  H --> UI[Mirror-node feed in the app]
+  T[RwaToken<br/>HTS token, KYC enforced by the network] -- valued by --> N[RwaNavOracle]
+  T -- traded on --> S[SaucerSwap via ISwapAdapter]
+  N -- bounds the price in --> G[NavBandSwap]
+  G --> S
+  X[x402 paywall] -- sells --> N
+  F[Flash loans] --> S
+  T & N & G & X & F -- events --> H[(HCS audit topic)]
 ```
 
-- **HTS** carries the asset and enforces compliance: KYC is checked by the network itself, not by our Solidity.
-- **Smart contracts** hold the HTS admin keys (treasury, KYC, supply) behind on-chain roles, so no issuer key lives on a server.
-- **HCS** is the shared audit trail: every kit-contract event and every x402 settlement becomes one message on one topic.
-- **x402** turns any API route into a pay-per-request endpoint, settled as a native Hedera transfer with the facilitator paying the fee.
-
-## Live on Hedera testnet
-
-Everything below was produced by `yarn hardhat:deploy`, `yarn demo`, `yarn hardhat:flashloan:demo` and `yarn x402:pay` from one deployer (`0.0.10394443`):
-
-| What                                                        | Link                                                                                                                                  |
-| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| HCS audit topic (every kit event below lands here)          | [0.0.10843261](https://hashscan.io/testnet/topic/0.0.10843261)                                                                        |
-| RWA token (KRES, KYC + supply key = `RwaToken`)             | [0.0.10843354](https://hashscan.io/testnet/token/0.0.10843354)                                                                        |
-| `RwaToken` / `RwaNavOracle`                                 | [0.0.10843352](https://hashscan.io/testnet/contract/0.0.10843352) / [0.0.10844802](https://hashscan.io/testnet/contract/0.0.10844802) |
-| `SaucerSwapAdapter` (ISwapAdapter)                          | [0.0.10844808](https://hashscan.io/testnet/contract/0.0.10844808)                                                                     |
-| RWA/USDC SaucerSwap pair (KYC-granted, seeded at NAV)       | [0.0.10844831](https://hashscan.io/testnet/contract/0.0.10844831)                                                                     |
-| `NavBandSwap` (dex+rwa)                                     | [0.0.10845282](https://hashscan.io/testnet/contract/0.0.10845282)                                                                     |
-| `SaucerSwapFlashLoan` / `BonzoFlashLoan`                    | [0.0.10844811](https://hashscan.io/testnet/contract/0.0.10844811) / [0.0.10844819](https://hashscan.io/testnet/contract/0.0.10844819) |
-| Investor associates the token (HIP-719)                     | [0x64fc…e63f](https://hashscan.io/testnet/transaction/0x64fc53188ab1ddf26e69229ada9ee4afa2909d630433c88888c690bbe7ebe63f)             |
-| Compliance grants KYC (audit #23)                           | [0xddfc…4966](https://hashscan.io/testnet/transaction/0xddfc63f2fa7e0b4802ebaee2cabca706a5806ecfe6d4e452e148d25114394966)             |
-| Issuer issues 10 units (audit #24)                          | [0x8e76…1251](https://hashscan.io/testnet/transaction/0x8e76f822f113519d76a6e289fdeebac219e40b1fc087db94c1cf92ce0aa21251)             |
-| Appraiser posts NAV $103.03 (audit #25)                     | [0xa4b3…af84](https://hashscan.io/testnet/transaction/0xa4b344c46f264be88e61ddd2d8229f16b3868ae1615c840c6c2649d72d7faf84)             |
-| Buy RWA through `NavBandSwap`, 179 bps over NAV (audit #21) | [0x4681…da91](https://hashscan.io/testnet/transaction/0x468186e314cbe2d3698934653a09c9661e76b93a67f80cf35791bfbb5a36da91)             |
-| SaucerSwap flash swap, 1 WHBAR borrowed and repaid          | [0xf14f…63a9](https://hashscan.io/testnet/transaction/0xf14fc08511e18cda7e338bc22a6b8bb4d0efd599a46ec2038711b1ce301763a9)             |
-| x402 paid NAV report (`rwa+payments`)                       | [0.0.7162784-1791041416-286483229](https://hashscan.io/testnet/transaction/0.0.7162784-1791041416-286483229)                          |
-| x402 settlement (fee paid by Blocky402 `0.0.7162784`)       | [0.0.7162784-1791039263-792561927](https://hashscan.io/testnet/transaction/0.0.7162784-1791039263-792561927)                          |
-
-The scaffolded app is pre-wired to these ids (`packages/nextjs/contracts/`), so the audit feed and RWA page show live data before you deploy anything.
+- **HTS** carries the asset. Its KYC, supply and treasury keys belong to a contract, so compliance is an on-chain role check and no issuer key lives on a server.
+- **SaucerSwap** provides liquidity and an exit. `NavBandSwap` only buys while the pool price stays within 2% of the appraised NAV.
+- **x402** turns API routes into paid endpoints settled as native HBAR transfers; the facilitator pays the fee.
+- **HCS** stores one audit trail for every module, derived from on-chain events so it cannot be forged.
 
 ## Quick start
 
-**Prerequisites:** Node.js ≥ 20.18.3, Git, and Yarn (default) or npm. For on-chain steps you need a Hedera testnet account with an **ECDSA** key and some test HBAR from the [portal faucet](https://portal.hedera.com/faucet).
+Requires Node.js ≥ 20.18.3 and Git. On-chain steps need a Hedera testnet account with an **ECDSA** key, funded from the [portal faucet](https://portal.hedera.com/faucet).
 
 ```bash
-npx create-scaffold-hbar@latest --template ngempruy/ngempruy
-cd <your-project>
-yarn next:dev                  # http://localhost:3000, works with no wallet and no .env
+yarn next:dev                                  # http://localhost:3000, no wallet or .env needed
+yarn hardhat:account:generate                  # or hardhat:account:import
+yarn hardhat:deploy --network hederaTestnet    # deploy the selected modules
+yarn demo                                      # run every module on testnet, print HashScan links
 ```
 
-Then go on-chain:
-
-```bash
-yarn hardhat:account:generate  # or hardhat:account:import for an existing ECDSA key
-# fund the printed address at https://portal.hedera.com/faucet
-yarn hardhat:deploy --network hederaTestnet   # audit topic + selected modules
-yarn demo                      # runs every module's flow and prints HashScan links
-```
-
-For the web app's server-side actions (audit writes, x402), copy `packages/nextjs/.env.example` to `packages/nextjs/.env.local` and fill it in (see [Environment](#environment)).
+Server-side features (audit writes, x402) read `packages/nextjs/.env.local`; copy it from `.env.example`.
 
 ## Modules
 
-| Module                       | What you get                                                                                                                                | Hedera services                                | Page                 |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- | -------------------- |
-| `core` (always on)           | Wallet (RainbowKit + burner), Hedera SDK client, HCS audit log, module nav                                                                  | HCS, mirror node                               | `/modules/core`      |
-| `rwa`                        | `RwaToken` (HTS token, contract-held KYC + supply keys, role-gated issuance) and `RwaNavOracle` (NAV per unit, staleness + deviation guard) | HTS system contract `0x167`, HIP-719, Solidity | `/modules/rwa`       |
-| `payments`                   | x402 pay-per-request API, capped agent payer, direct HBAR transfers                                                                         | Native transfers, x402 facilitator             | `/modules/payments`  |
-| `dex`                        | `SaucerSwapAdapter` behind `ISwapAdapter` (quote, swap, balance-delta output), wrap and swap page                                           | Solidity, HTS association, SaucerSwap V1       | `/modules/dex`       |
-| `flashloan` (requires `dex`) | Flash arbitrage / liquidation strategies; SaucerSwap V1 flash swaps (live) and Bonzo Lend `flashLoan` (ready, see gotchas)                  | Solidity, SaucerSwap V1 pairs                  | `/modules/flashloan` |
+| Module      | Provides                                                                                           | Hedera                             |
+| ----------- | -------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `core`      | Wallet, SDK client, HCS audit log, module navigation                                               | HCS, mirror node                   |
+| `rwa`       | `RwaToken` (contract-held KYC and supply keys) and `RwaNavOracle` (staleness and deviation guards) | HTS system contract, HIP-719       |
+| `dex`       | `SaucerSwapAdapter` behind `ISwapAdapter`                                                          | SaucerSwap V1                      |
+| `flashloan` | Arbitrage and liquidation strategies over SaucerSwap flash swaps; Bonzo Lend provider ready        | SaucerSwap V1, Bonzo               |
+| `payments`  | x402 paid API, capped agent payer, direct HBAR transfers                                           | Native transfers, x402 facilitator |
 
-A module whose required env vars are missing still renders: it shows a setup hint and disables actions that need signing.
+**Recipes** activate when all of their modules are selected:
 
-### Integration recipes
+| Recipe         | Adds                                                                   |
+| -------------- | ---------------------------------------------------------------------- |
+| `dex+rwa`      | RWA/USDC pool with KYC for the pair, seeded at NAV, and `NavBandSwap`  |
+| `rwa+payments` | `GET /api/x402/nav-report`: NAV and appraisal history sold per request |
 
-| Recipe         | Active when          | What it adds                                                                                                                                                                                          |
-| -------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `dex+rwa`      | `dex` and `rwa`      | The RWA/USDC pool with KYC for the pair, seeded at NAV, and `NavBandSwap`: buys only while the price paid is within 2% above the appraised NAV, so a thin or manipulated pool can't overcharge buyers |
-| `rwa+payments` | `rwa` and `payments` | `GET /api/x402/nav-report`: the RWA's NAV and appraisal history (decoded `NavPosted` events) sold per request over x402                                                                               |
-
-A recipe lives in `packages/shared/src/integrations/<a>+<b>.ts`, owns its own files, and is removed by `yarn configure` as soon as one of its modules is dropped. Try `rwa+payments` with `yarn x402:pay http://localhost:3000/api/x402/nav-report`; `yarn demo` runs the `dex+rwa` buy, including a refused oversized order.
-
-### Choosing modules
-
-The repo ships with every module enabled. Keep only what you need:
+Keep only what you need. `yarn configure` resolves dependencies, regenerates config and `.env.example`, and deletes the files, scripts and packages of everything else:
 
 ```bash
-yarn configure                      # interactive
-yarn configure --modules rwa        # non-interactive
-yarn configure --modules rwa --dry-run
+yarn configure --modules rwa,payments
 ```
 
-`configure` resolves dependencies (`requires`), rejects conflicts (two modules `provides` the same capability), activates the integration recipes whose modules are all selected, then rewrites `modules.config.ts`, the UI view registry and the generated part of `.env.example`. Finally it deletes the files, package scripts and npm dependencies of everything you dropped. Commit first: pruning deletes files. Run `yarn install` afterwards.
+## Live on testnet
 
-## Environment
+Deployed by this repo's scripts from account `0.0.10394443`. The scaffolded app ships pre-wired to these, so the audit feed and asset pages show live data immediately.
 
-`packages/nextjs/.env.local` (server-side; generated keys listed in `.env.example`):
+|                                         |                                                                                                                                                                                                                                                                                                                                                             |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| HCS audit topic                         | [0.0.10843261](https://hashscan.io/testnet/topic/0.0.10843261)                                                                                                                                                                                                                                                                                              |
+| RWA token (KYC key held by contract)    | [0.0.10843354](https://hashscan.io/testnet/token/0.0.10843354)                                                                                                                                                                                                                                                                                              |
+| RWA/USDC SaucerSwap pool                | [0.0.10844831](https://hashscan.io/testnet/contract/0.0.10844831)                                                                                                                                                                                                                                                                                           |
+| Grant KYC → issue → post NAV            | [KYC](https://hashscan.io/testnet/transaction/0xddfc63f2fa7e0b4802ebaee2cabca706a5806ecfe6d4e452e148d25114394966) · [issue](https://hashscan.io/testnet/transaction/0x8e76f822f113519d76a6e289fdeebac219e40b1fc087db94c1cf92ce0aa21251) · [NAV](https://hashscan.io/testnet/transaction/0xa4b344c46f264be88e61ddd2d8229f16b3868ae1615c840c6c2649d72d7faf84) |
+| Buy within the NAV band                 | [tx](https://hashscan.io/testnet/transaction/0x468186e314cbe2d3698934653a09c9661e76b93a67f80cf35791bfbb5a36da91)                                                                                                                                                                                                                                            |
+| Flash loan (borrow and repay 1 WHBAR)   | [tx](https://hashscan.io/testnet/transaction/0xf14fc08511e18cda7e338bc22a6b8bb4d0efd599a46ec2038711b1ce301763a9)                                                                                                                                                                                                                                            |
+| x402 settlement (fee paid by Blocky402) | [tx](https://hashscan.io/testnet/transaction/0.0.7162784-1791041416-286483229)                                                                                                                                                                                                                                                                              |
 
-| Variable                     | Module   | Required   | Purpose                                               |
-| ---------------------------- | -------- | ---------- | ----------------------------------------------------- |
-| `HEDERA_OPERATOR_ID`         | core     | for writes | Account (`0.0.x`) that pays for HCS messages          |
-| `HEDERA_OPERATOR_KEY`        | core     | for writes | Its ECDSA private key (hex). Never commit it          |
-| `NEXT_PUBLIC_AUDIT_TOPIC_ID` | core     | no         | Overrides the topic recorded by `yarn hardhat:deploy` |
-| `X402_PAY_TO`                | payments | yes        | Account that receives x402 payments                   |
-| `X402_FACILITATOR_URL`       | payments | no         | Default `https://api.testnet.blocky402.com`           |
-| `X402_PRICE_TINYBARS`        | payments | no         | Default `1000000` (0.01 HBAR)                         |
+## Configuration
 
-`packages/hardhat/.env` holds `DEPLOYER_PRIVATE_KEY_ENCRYPTED`, written by `hardhat:account:generate` / `hardhat:account:import`. In CI or for agents you can instead export a plain `DEPLOYER_PRIVATE_KEY`; the deploy wrapper then skips the password prompt.
+`packages/nextjs/.env.local`:
+
+| Variable                                      | Purpose                                                                   |
+| --------------------------------------------- | ------------------------------------------------------------------------- |
+| `HEDERA_OPERATOR_ID`, `HEDERA_OPERATOR_KEY`   | Account that writes audit entries; its key must be the topic's submit key |
+| `NEXT_PUBLIC_AUDIT_TOPIC_ID`                  | Optional override of the deployed topic                                   |
+| `X402_PAY_TO`                                 | Account that receives x402 payments                                       |
+| `X402_FACILITATOR_URL`, `X402_PRICE_TINYBARS` | Optional; default Blocky402 testnet and 0.01 HBAR                         |
+
+The deployer key is stored encrypted in `packages/hardhat/.env`. In CI, export `DEPLOYER_PRIVATE_KEY` instead.
 
 ## Architecture
 
 ```
-packages/
-  shared/      @sh/shared: module manifests, resolver, configure logic, audit format (pure TS, tested)
-    src/modules/<id>.ts        one manifest per module: requires, provides, contracts, env, owned paths
-    src/integrations/<a+b>.ts  recipes, active only when all their modules are selected
-    src/modules.config.ts      the selection (generated)
-  hardhat/     @sh/hardhat: contracts, deploy steps, tests, demo
-    contracts/core/            provider-agnostic interfaces (IPriceOracle, ISwapAdapter)
-    contracts/adapters/        provider implementations (Pyth, Chainlink, SaucerSwap, mocks)
-    contracts/modules/<id>/    module contracts
-    deploy/NN_<id>.ts          one deploy step per module (00 core, 10 rwa, …)
-    scripts/demo/<id>.ts       one demo step per module
-  nextjs/      @sh/nextjs: the app
-    modules/<id>/index.ts      the module's page view (registry generated)
-    app/api/audit              turns a confirmed kit tx into HCS audit entries
-    app/api/x402/*             paid endpoints
+packages/shared    module manifests, resolver, configure, audit format
+packages/hardhat   contracts (core interfaces, adapters, modules, recipes), deploy steps, demo
+packages/nextjs    app: one page per module, /api/audit, x402 routes
 ```
 
-**Rules that keep modules composable**
+- A module never imports another; cross-module behavior goes through interfaces (`IPriceOracle`, `ISwapAdapter`) or a recipe.
+- The manifest declares everything a module owns (contracts, env vars, files, scripts, dependencies), which is what makes pruning safe.
+- `/api/audit` accepts only transactions to kit contracts, verifies them on the mirror node and writes one HCS message per event.
 
-1. A module never imports another module. It talks to shared interfaces (`IPriceOracle`, `ISwapAdapter`) or declares `consumes` and handles the other module being absent.
-2. The manifest is the single source of truth: contracts, env vars, owned files, scripts and dependencies all come from it.
-3. Combinations get a recipe (`integrations/<a>+<b>`), not `if` statements inside modules.
+## Hedera notes
 
-**The audit pipeline.** After any kit transaction the UI posts its hash to `/api/audit`. The server loads the transaction from the mirror node and accepts it only if it called a contract listed in a module manifest. It then decodes that contract's events with the deployed ABI and writes one HCS message per event. Entries are derived from on-chain data, so a caller cannot forge them. Scripts use the same `auditEntryFromEvent` mapping. x402 settlements are logged from the resource server's `afterSettle` hook.
+- An account must associate an HTS token before receiving it, and must be associated before it can be granted KYC (otherwise HTS returns code 184).
+- Contracts that hold a KYC token, such as DEX pairs, need association and KYC too. Creating a pair for a KYC token needs a high gas limit.
+- EVM accounts use ECDSA keys. JSON-RPC values are in weibars (10¹⁸ per HBAR); the SDK and x402 use tinybars (10⁸).
+- Testnet has two USDC tokens: SaucerSwap pools use `0.0.5449`, Circle's faucet mints `0.0.429274`.
+- Bonzo Lend is currently unusable for flash loans (testnet deposits revert, mainnet pool paused), so SaucerSwap flash swaps are the live provider.
+- Atomic batches are not used for contract calls (restricted, removed in 2027), and hooks (HIP-1195) are not live yet.
 
-## Hedera things this template handles for you
+An HTS KYC key is used instead of ERC-3643 because the network enforces it on every transfer, including transfers that never touch these contracts.
 
-- **Association before receiving.** HTS tokens must be associated with an account or contract before it can receive them. Investors associate themselves through HIP-719 (`associate()` on the token address); the UI and demo do this.
-- **KYC needs association first.** Granting KYC to an account that is not yet associated fails with HTS code `184` (`TOKEN_NOT_ASSOCIATED_TO_ACCOUNT`). `RwaToken` surfaces it as `HtsCallFailed(selector, 184)`. The order is associate → grant KYC → issue.
-- **KYC-key tokens and pools.** Any contract that must hold a KYC-gated token (a DEX pair, router, lending pool) also needs association **and** KYC, granted through `RwaToken.grantKyc`.
-- **Pools that hold KYC tokens.** Creating the RWA/USDC pair needs a generous gas limit (the pair associates itself with both tokens; 4M gas fails with `Safe multiple associations failed!`), and the pair must then receive KYC before any liquidity can reach it.
-- **Bonzo Lend today.** Testnet deposits revert with `CALLER_NOT_AUTHORIZED` and the mainnet pool is paused (checked 2026-10-03), so SaucerSwap flash swaps are the live flash-loan provider; `BonzoFlashLoan` works unchanged once Bonzo is live.
-- **Contract-held keys.** The RWA token's treasury, KYC key and supply key are the `RwaToken` contract (`contractId` keys), so compliance is a role check plus a system-contract call.
-- **ECDSA accounts.** Hardhat and EVM wallets need ECDSA (secp256k1) keys. Funding an unknown EVM address auto-creates its account, which is what `yarn demo` does for a fresh investor.
-- **Units.** JSON-RPC values are in weibars (1 HBAR = 10¹⁸); the SDK and x402 use tinybars (1 HBAR = 10⁸).
-- **x402 is a native transfer.** The client signs a `TransferTransaction` without submitting it. The facilitator co-signs as fee payer and submits. No EVM call is involved.
-- **Two testnet USDCs.** SaucerSwap and Bonzo pools use `0.0.5449`; Circle's faucet mints `0.0.429274`, which has no SaucerSwap pool. x402 here is priced in HBAR to avoid that split.
-- **Avoided on purpose.** Atomic batch transactions no longer allow arbitrary contract calls (at most one, last, removed entirely in 2027), so composition happens inside contracts. Hooks (HIP-1195) are not live on public networks yet.
+## Extending
 
-**Why an HTS KYC key instead of ERC-3643?** Hedera's Asset Tokenization Studio supports both. A native HTS KYC key is enforced by the network on every transfer, including transfers that never touch our contracts, and keeps the token usable by every HTS-aware wallet and DEX. ERC-3643 is the better fit when you need on-chain identity claims and transfer rules beyond allow/deny.
+Add a module with a manifest in `packages/shared/src/modules/<id>.ts`, contracts in `packages/hardhat/contracts/modules/<id>/`, a deploy step, a demo step and a page in `packages/nextjs/modules/<id>/`, then run `yarn configure`. Add a provider by implementing `IPriceOracle` or `ISwapAdapter` in `contracts/adapters/`. See [AGENTS.md](AGENTS.md) for the full conventions.
 
-## Adding a module
+Planned providers and modules: Supra and Chainlink Proof of Reserve oracles, other Hedera DEXs (Silk Suite, EtaSwap, Orbit), lending with HIP-1215 scheduled liquidations, a CDP stablecoin on RWA collateral, native staking, HashPack and Kabila wallets, and bridges (CCIP, Axelar, LayerZero).
 
-1. **Manifest:** `packages/shared/src/modules/<id>.ts`
-
-   ```ts
-   export const lending = defineModule({
-     id: "lending",
-     title: "Lending",
-     description: "Borrow against RWA collateral",
-     requires: ["core"],
-     consumes: ["rwa"],
-     provides: ["lending"],
-     contracts: ["LendingPool"],
-     env: [{ key: "LENDING_MAX_LTV_BPS", description: "Max loan-to-value", required: false }],
-     paths: ["packages/shared/src/modules/lending.ts", "packages/hardhat/contracts/modules/lending" /* … */],
-   });
-   ```
-
-2. **Contracts** in `packages/hardhat/contracts/modules/<id>/`, tests in `packages/hardhat/test/modules/`, deploy step `deploy/NN_<id>.ts`, demo step `scripts/demo/<id>.ts`.
-3. **UI** in `packages/nextjs/modules/<id>/` with an `index.ts` that default-exports the view (`{ ready }` prop).
-4. Run `yarn configure --modules <all you keep>` to regenerate config, registry and `.env.example`.
-
-Kit-contract events are audit-logged automatically once the contract is listed in the manifest.
-
-**Adding a provider** (a new oracle or DEX): implement the interface in `contracts/adapters/`, add a test with a mock, and deploy it in place of the default. Modules only see the interface.
-
-## Ecosystem coverage
-
-| Area                | Supported now                                                     | Planned slot                                                                                                                          |
-| ------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| DEX / AMM           | SaucerSwap V1 (`ISwapAdapter`)                                    | Silk Suite, memejob, Salt, EtaSwap, Orbit, Lambdaplex: `ISwapAdapter` providers                                                       |
-| Oracles             | Pyth, Chainlink Data Feeds, mock (`IPriceOracle`), RWA NAV oracle | Supra (`IPriceOracle`); Chainlink Proof of Reserve when it ships on Hedera                                                            |
-| RWA                 | HTS + contract-held KYC key + NAV                                 | Read-only registries for Archax, Securitize, Tokeny, Swarm, Zoniqx, RedSwan, OpenBrick, InvestaX, Byzanlink                           |
-| Payments            | x402 (Blocky402, Ax402, x402.org), direct HBAR                    | USDC / USDT0 / AUDD / PHPX / XSGD / FRNT / HUSD as configured assets                                                                  |
-| Lending, CDP, yield | Flash loans: SaucerSwap flash swaps (live), Bonzo Lend (ready)    | Bonzo / HLiquity providers; own lending with HIP-1215 scheduled liquidations; CDP stablecoin on RWA collateral; Ichi / YieldFX vaults |
-| Staking             | —                                                                 | Native HBAR staking module (SDK only)                                                                                                 |
-| Wallets             | RainbowKit + burner (EVM)                                         | HashPack / Kabila via hedera-wallet-connect for native signing                                                                        |
-| Bridges             | —                                                                 | Chainlink CCIP, Axelar, LayerZero, HashPort, Squid                                                                                    |
-
-## Testing
+## Development
 
 ```bash
-yarn shared:test     # resolver, configure, audit format
-yarn hardhat:test    # contracts; HTS is emulated on a testnet fork, KYC through a MockHts at 0x167
 yarn lint && yarn format:check && yarn next:check-types
-yarn harness:validate # Hedera Harness recipe: static, command and route tiers (.harness/)
+yarn shared:test && yarn hardhat:test
+yarn harness:validate     # Hedera Harness recipe in .harness/
 ```
 
-CI runs all of the above (including the Harness recipe) for the full kit, for every single-module configuration, and for a fresh `create-scaffold-hbar` scaffold with both Yarn and npm (lint, build, boot, routes).
+CI runs these for the full kit, for each single-module configuration, on Node 25, and against a fresh `create-scaffold-hbar` scaffold with Yarn and npm.
 
 ## License
 
