@@ -1,6 +1,6 @@
+import { time } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { time } from "@nomicfoundation/hardhat-network-helpers";
 
 const ASSET = "0x0000000000000000000000000000000000003aD2"; // WHBAR
 const HOUR = 3600;
