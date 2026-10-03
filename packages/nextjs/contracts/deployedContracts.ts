@@ -370,7 +370,7 @@ const deployedContracts = {
       deployedOnBlock: 41312212,
     },
     NavBandSwap: {
-      address: "0xFcB3cC1d6C5c0650C1E277771DBe846d9456B17B",
+      address: "0x34B55ebe00d63e92C20A1103921aca502f3fD940",
       abi: [
         {
           inputs: [
@@ -464,6 +464,11 @@ const deployedContracts = {
             },
           ],
           name: "SafeERC20FailedOperation",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "UnsupportedDecimals",
           type: "error",
         },
         {
@@ -687,7 +692,7 @@ const deployedContracts = {
         },
       ],
       inheritedFunctions: {},
-      deployedOnBlock: 41312224,
+      deployedOnBlock: 41313553,
     },
     RwaNavOracle: {
       address: "0xbB738876963c94031Cd084a3B3dB2A727dEE7921",

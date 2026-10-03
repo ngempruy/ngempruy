@@ -48,13 +48,13 @@ Everything below was produced by `yarn hardhat:deploy`, `yarn demo`, `yarn hardh
 | `RwaToken` / `RwaNavOracle`                                 | [0.0.10843352](https://hashscan.io/testnet/contract/0.0.10843352) / [0.0.10844802](https://hashscan.io/testnet/contract/0.0.10844802) |
 | `SaucerSwapAdapter` (ISwapAdapter)                          | [0.0.10844808](https://hashscan.io/testnet/contract/0.0.10844808)                                                                     |
 | RWA/USDC SaucerSwap pair (KYC-granted, seeded at NAV)       | [0.0.10844831](https://hashscan.io/testnet/contract/0.0.10844831)                                                                     |
-| `NavBandSwap` (dex+rwa)                                     | [0.0.10844823](https://hashscan.io/testnet/contract/0.0.10844823)                                                                     |
+| `NavBandSwap` (dex+rwa)                                     | [0.0.10845282](https://hashscan.io/testnet/contract/0.0.10845282)                                                                     |
 | `SaucerSwapFlashLoan` / `BonzoFlashLoan`                    | [0.0.10844811](https://hashscan.io/testnet/contract/0.0.10844811) / [0.0.10844819](https://hashscan.io/testnet/contract/0.0.10844819) |
-| Investor associates the token (HIP-719)                     | [0x3539…354d](https://hashscan.io/testnet/transaction/0x3539c77a97e0de2be719523a0a839c82c7a2e9d16aee02d83b0f4ef80e4a354d)             |
-| Compliance grants KYC (audit #17)                           | [0x4599…848d](https://hashscan.io/testnet/transaction/0x4599c3244bc069a226fd6f9a771d7da44ad369a22eaab1ee4b3728d4039a848d)             |
-| Issuer issues 10 units (audit #18)                          | [0x5b46…be87](https://hashscan.io/testnet/transaction/0x5b4640ec59c191e9b2d1bbbbd06d53942a9876244117e2350e86edae3818be87)             |
-| Appraiser posts NAV $102.01 (audit #19)                     | [0x3536…f4cb](https://hashscan.io/testnet/transaction/0x353647fdb876318e936149249b3a138ba4a06fbe640e6e19b339f274ca4ff4cb)             |
-| Buy RWA through `NavBandSwap`, 156 bps over NAV (audit #16) | [0x6719…c223](https://hashscan.io/testnet/transaction/0x6719a6f09e1ccde4551f5d63e1bceeef880b9f1c7246ba0fa58cd603ad83c223)             |
+| Investor associates the token (HIP-719)                     | [0x64fc…e63f](https://hashscan.io/testnet/transaction/0x64fc53188ab1ddf26e69229ada9ee4afa2909d630433c88888c690bbe7ebe63f)             |
+| Compliance grants KYC (audit #23)                           | [0xddfc…4966](https://hashscan.io/testnet/transaction/0xddfc63f2fa7e0b4802ebaee2cabca706a5806ecfe6d4e452e148d25114394966)             |
+| Issuer issues 10 units (audit #24)                          | [0x8e76…1251](https://hashscan.io/testnet/transaction/0x8e76f822f113519d76a6e289fdeebac219e40b1fc087db94c1cf92ce0aa21251)             |
+| Appraiser posts NAV $103.03 (audit #25)                     | [0xa4b3…af84](https://hashscan.io/testnet/transaction/0xa4b344c46f264be88e61ddd2d8229f16b3868ae1615c840c6c2649d72d7faf84)             |
+| Buy RWA through `NavBandSwap`, 179 bps over NAV (audit #21) | [0x4681…da91](https://hashscan.io/testnet/transaction/0x468186e314cbe2d3698934653a09c9661e76b93a67f80cf35791bfbb5a36da91)             |
 | SaucerSwap flash swap, 1 WHBAR borrowed and repaid          | [0xf14f…63a9](https://hashscan.io/testnet/transaction/0xf14fc08511e18cda7e338bc22a6b8bb4d0efd599a46ec2038711b1ce301763a9)             |
 | x402 paid NAV report (`rwa+payments`)                       | [0.0.7162784-1791041416-286483229](https://hashscan.io/testnet/transaction/0.0.7162784-1791041416-286483229)                          |
 | x402 settlement (fee paid by Blocky402 `0.0.7162784`)       | [0.0.7162784-1791039263-792561927](https://hashscan.io/testnet/transaction/0.0.7162784-1791039263-792561927)                          |
