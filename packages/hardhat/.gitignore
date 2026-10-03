@@ -21,8 +21,9 @@ artifacts-zk
 cache-zk
 
 # deployments
-deployments
-
+# Testnet deployments are tracked so every deployer regenerates the same deployedContracts.ts
+deployments/*
+!deployments/hederaTestnet
 # typescript
 *.tsbuildinfo
 
