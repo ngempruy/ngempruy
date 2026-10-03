@@ -44,7 +44,7 @@ jobs:
       - run: yarn install --immutable
       - run: yarn configure --modules ${{ matrix.modules }}
       # Pruned dependencies change the lockfile, so this install is not immutable.
-      - run: yarn install
+      - run: yarn install --no-immutable
       - run: yarn format:check
       - run: yarn lint
       - run: yarn next:check-types
@@ -66,6 +66,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Git identity (the CLI makes the first commit)
+        run: |
+          git config --global user.name "ci"
+          git config --global user.email "ci@users.noreply.github.com"
       - name: Scaffold from this branch
         run: >
           npx --yes create-scaffold-hbar@latest app
