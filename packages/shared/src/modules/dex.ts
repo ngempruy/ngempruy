@@ -12,6 +12,7 @@ export const dex = defineModule({
     "packages/shared/src/modules/dex.ts",
     "packages/hardhat/contracts/adapters/SaucerSwapAdapter.sol",
     "packages/hardhat/contracts/mocks/MockSaucerSwapRouter.sol",
+    "packages/hardhat/contracts/mocks/MockSwapAdapter.sol",
     "packages/hardhat/deploy/20_dex_saucerswap_adapter.ts",
     "packages/hardhat/test/SaucerSwapAdapter.test.ts",
     "packages/hardhat/scripts/dexSwap.ts",
