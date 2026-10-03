@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: All modules
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+      - run: yarn install --immutable
+      - run: yarn format:check
+      - run: yarn lint
+      - run: yarn next:check-types
+      - run: yarn shared:test
+      # Forks Hedera testnet through hashio for the HTS emulation.
+      - run: yarn hardhat:test
+      - run: yarn next:build
+
+  configure:
+    name: Modules ${{ matrix.modules }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        modules: [rwa, payments, "rwa,payments"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+      - run: yarn install --immutable
+      - run: yarn configure --modules ${{ matrix.modules }}
+      # Pruned dependencies change the lockfile, so this install is not immutable.
+      - run: yarn install
+      - run: yarn format:check
+      - run: yarn lint
+      - run: yarn next:check-types
+      - run: yarn hardhat:test
+      - run: yarn next:build
+
+  scaffold:
+    name: Fresh scaffold (${{ matrix.package-manager }})
+    # The CLI downloads the template from GitHub, so only branches of this repo can be scaffolded.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package-manager: [yarn, npm]
+    env:
+      PM: ${{ matrix.package-manager }}
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Scaffold from this branch
+        run: >
+          npx --yes create-scaffold-hbar@latest app
+          --template ${{ github.repository }}#${{ github.head_ref || github.ref_name }}
+          --package-manager $PM --solidity-framework hardhat --frontend nextjs-app --network testnet
+          --skip-hedera-skills --yes --ci
+      - name: Lint and build
+        working-directory: app
+        run: |
+          $PM run lint
+          $PM run next:build
+      - name: App boots and core routes respond
+        working-directory: app
+        run: |
+          $PM run next:serve &
+          timeout 60 bash -c 'until curl -sf http://localhost:3000 >/dev/null; do sleep 2; done'
+          for route in / /modules/core /modules/rwa /modules/payments; do
+            curl -sf -o /dev/null "http://localhost:3000$route" && echo "$route OK"
+          done
