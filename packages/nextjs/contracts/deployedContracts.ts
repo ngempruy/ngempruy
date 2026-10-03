@@ -482,7 +482,7 @@ const deployedContracts = {
       deployedOnBlock: 41308153,
     },
     RwaToken: {
-      address: "0x7178a20300012DD81aa33CB7426d0e6597B0BbF6",
+      address: "0x15B1aED275DF359B0B739A0AC0cFD1DD58dEf1b4",
       abi: [
         {
           inputs: [
@@ -976,7 +976,7 @@ const deployedContracts = {
         revokeRole: "@openzeppelin/contracts/access/AccessControl.sol",
         supportsInterface: "@openzeppelin/contracts/access/AccessControl.sol",
       },
-      deployedOnBlock: 41308158,
+      deployedOnBlock: 41308298,
     },
   },
 } as const;
