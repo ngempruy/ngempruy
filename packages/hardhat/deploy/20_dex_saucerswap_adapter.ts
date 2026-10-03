@@ -1,6 +1,5 @@
-import type { HardhatRuntimeEnvironment } from "hardhat/types";
 import type { DeployFunction } from "hardhat-deploy/types";
-
+import type { HardhatRuntimeEnvironment } from "hardhat/types";
 import { getDeployGasPrice } from "../utils/getDeployGasPrice";
 import { SAUCERSWAP_TESTNET } from "../utils/saucerswap";
 
