@@ -10,6 +10,7 @@
     ]
   },
   "scripts": {
+    "configure": "yarn workspace @sh/shared configure",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "hardhat:account": "yarn workspace @sh/hardhat account",
@@ -38,7 +39,8 @@
     "postinstall": "husky",
     "precommit": "lint-staged",
     "shared:check-types": "yarn workspace @sh/shared check-types",
-    "shared:test": "yarn workspace @sh/shared test"
+    "shared:test": "yarn workspace @sh/shared test",
+    "x402:pay": "yarn workspace @sh/nextjs x402:pay"
   },
   "packageManager": "yarn@3.2.3",
   "devDependencies": {

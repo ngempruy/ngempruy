@@ -8,10 +8,12 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "test": "tsx --test test/*.test.ts",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "configure": "tsx scripts/configure.ts",
+    "test": "tsx --test test/*.test.ts"
   },
   "devDependencies": {
+    "@inquirer/checkbox": "^4.1.0",
     "@types/node": "^18.19.50",
     "tsx": "~4.20.3",
     "typescript": "^5.8.2"
