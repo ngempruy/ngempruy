@@ -1,22 +1,22 @@
+import "@nomicfoundation/hardhat-chai-matchers";
+import "@nomicfoundation/hardhat-ethers";
+import "@typechain/hardhat";
 import * as dotenv from "dotenv";
+import "hardhat-deploy";
+import "hardhat-deploy-ethers";
+import "hardhat-gas-reporter";
+import { HardhatUserConfig, task } from "hardhat/config";
+import "solidity-coverage";
+import generateTsAbis from "./scripts/generateTsAbis";
+
 dotenv.config();
 
-import { HardhatUserConfig, task } from "hardhat/config";
-import "@nomicfoundation/hardhat-ethers";
-import "@nomicfoundation/hardhat-chai-matchers";
-import "@typechain/hardhat";
-import "hardhat-gas-reporter";
-import "solidity-coverage";
 // Only load the Hedera forking plugin when starting the local node (yarn hardhat:chain / yarn hardhat:fork).
 // Deploying to an already-running node doesn't need it and would fail with EADDRINUSE.
 if (process.env.HEDERA_FORKING === "true") {
   // eslint-disable-next-line @typescript-eslint/no-require-imports -- conditional plugin load
   require("@hashgraph/system-contracts-forking/plugin");
 }
-import "hardhat-deploy";
-import "hardhat-deploy-ethers";
-
-import generateTsAbis from "./scripts/generateTsAbis";
 
 // Hedera JSON-RPC URL (testnet default). Set HEDERA_RPC_URL in .env for mainnet.
 const hederaRpcUrl = process.env.HEDERA_RPC_URL || "https://testnet.hashio.io/api";

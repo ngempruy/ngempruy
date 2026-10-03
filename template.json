@@ -18,9 +18,7 @@
       "sections": [
         {
           "title": "Run it",
-          "steps": [
-            { "label": "Start the frontend (works without a wallet or .env)", "command": "{run:next:dev}" }
-          ]
+          "steps": [{ "label": "Start the frontend (works without a wallet or .env)", "command": "{run:next:dev}" }]
         },
         {
           "title": "Go on-chain (Hedera testnet)",

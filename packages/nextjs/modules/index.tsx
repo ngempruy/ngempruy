@@ -1,5 +1,6 @@
 import type { ComponentType } from "react";
 import { AuditFeed } from "./core/AuditFeed";
+import { RwaView } from "./rwa/RwaView";
 
 /**
  * UI per module id. Views render even while setup is incomplete (`ready` is false),
@@ -7,4 +8,5 @@ import { AuditFeed } from "./core/AuditFeed";
  */
 export const moduleViews: Record<string, ComponentType<{ ready: boolean }>> = {
   core: AuditFeed,
+  rwa: RwaView,
 };

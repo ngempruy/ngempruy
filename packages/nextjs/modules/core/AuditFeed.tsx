@@ -18,7 +18,7 @@ export const AuditFeed = async () => {
   }
 
   const res = await fetch(`${MIRROR}/api/v1/topics/${topicId}/messages?order=desc&limit=25`, { cache: "no-store" });
-  if (!res.ok) return <p className="m-0 text-sm text-error">Mirror node returned HTTP {res.status}.</p>;
+  if (!res.ok) return <p className="text-error m-0 text-sm">Mirror node returned HTTP {res.status}.</p>;
   const { messages } = (await res.json()) as { messages: MirrorMessage[] };
 
   return (
@@ -33,7 +33,7 @@ export const AuditFeed = async () => {
         <p className="m-0 text-sm">No entries yet.</p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="table table-sm">
+          <table className="table-sm table">
             <thead>
               <tr>
                 <th>#</th>

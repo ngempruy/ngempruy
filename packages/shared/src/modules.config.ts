@@ -1,6 +1,7 @@
-// Selected modules and integration recipes. `npm run configure` rewrites this file.
-import { core } from "./core";
+// Selected modules and integration recipes. `yarn configure` rewrites this file.
 import type { IntegrationRecipe, ModuleManifest } from "./define";
+import { core } from "./modules/core";
+import { rwa } from "./modules/rwa";
 
-export const modules: ModuleManifest[] = [core];
+export const modules: ModuleManifest[] = [core, rwa];
 export const integrations: IntegrationRecipe[] = [];

@@ -23,10 +23,10 @@ export const LocalChainErrorBanner = () => {
   if (!hasError) return null;
 
   return (
-    <div className="bg-error/10 border-b border-error/20 px-4 py-2 flex items-center justify-center gap-2 text-error">
+    <div className="bg-error/10 border-error/20 text-error flex items-center justify-center gap-2 border-b px-4 py-2">
       <ExclamationTriangleIcon className="h-5 w-5 shrink-0" />
-      <p className="text-sm font-medium m-0">
-        Cannot connect to local node. Run <code className="bg-error/20 px-1.5 py-0.5 rounded">yarn hardhat:chain</code>{" "}
+      <p className="m-0 text-sm font-medium">
+        Cannot connect to local node. Run <code className="bg-error/20 rounded px-1.5 py-0.5">yarn hardhat:chain</code>{" "}
         in a terminal or switch to Testnet/Mainnet.
       </p>
     </div>

@@ -17,10 +17,10 @@ import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 const ScaffoldHbarApp = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
-      <div className="flex flex-col min-h-screen">
+      <div className="flex min-h-screen flex-col">
         <Header />
         <LocalChainErrorBanner />
-        <main className="relative flex flex-col flex-1">{children}</main>
+        <main className="relative flex flex-1 flex-col">{children}</main>
         <Footer />
       </div>
       <Toaster />

@@ -1,20 +1,20 @@
-import { TransactionHash } from "./TransactionHash";
 import { Address } from "@scaffold-hbar-ui/components";
 import { formatUnits } from "viem";
 import { hardhat } from "viem/chains";
 import { useTargetNetwork } from "~~/hooks/scaffold-hbar/useTargetNetwork";
 import { TransactionWithFunction } from "~~/utils/scaffold-hbar";
 import { TransactionsTableProps } from "~~/utils/scaffold-hbar";
+import { TransactionHash } from "./TransactionHash";
 
 export const TransactionsTable = ({ blocks, transactionReceipts }: TransactionsTableProps) => {
   const { targetNetwork } = useTargetNetwork();
 
   return (
     <div className="flex justify-center px-4 md:px-0">
-      <div className="overflow-x-auto w-full shadow-2xl rounded-xl">
-        <table className="table text-xl bg-base-100 table-zebra w-full md:table-md table-sm">
+      <div className="w-full overflow-x-auto rounded-xl shadow-2xl">
+        <table className="bg-base-100 table-zebra md:table-md table-sm table w-full text-xl">
           <thead>
-            <tr className="rounded-xl text-sm text-base-content">
+            <tr className="text-base-content rounded-xl text-sm">
               <th className="bg-primary">Transaction Hash</th>
               <th className="bg-primary">Function Called</th>
               <th className="bg-primary">Block Number</th>
@@ -47,7 +47,7 @@ export const TransactionsTable = ({ blocks, transactionReceipts }: TransactionsT
                       <div className="flex items-center gap-2 whitespace-nowrap">
                         {functionLabel && <span>{functionLabel}</span>}
                         {showFunctionSelectorBadge && (
-                          <span className="badge badge-primary font-bold text-xs">{functionCalled}</span>
+                          <span className="badge badge-primary text-xs font-bold">{functionCalled}</span>
                         )}
                       </div>
                     </td>
@@ -84,7 +84,7 @@ export const TransactionsTable = ({ blocks, transactionReceipts }: TransactionsT
                                 : undefined
                             }
                           />
-                          <small className="text-xs text-base-content/70">(Contract Creation)</small>
+                          <small className="text-base-content/70 text-xs">(Contract Creation)</small>
                         </div>
                       )}
                     </td>
