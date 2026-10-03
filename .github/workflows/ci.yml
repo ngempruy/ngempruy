@@ -89,3 +89,17 @@ jobs:
           for route in / /modules/core /modules/rwa /modules/payments; do
             curl -sf -o /dev/null "http://localhost:3000$route" && echo "$route OK"
           done
+
+  harness:
+    name: Hedera Harness validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+      - run: yarn install --immutable
+      - run: yarn playwright install --with-deps chromium
+      # Static, command and Playwright route tiers; no agent run, no credentials.
+      - run: yarn harness:validate
