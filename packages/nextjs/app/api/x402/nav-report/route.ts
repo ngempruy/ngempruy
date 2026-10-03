@@ -3,7 +3,7 @@ import { withX402 } from "@x402/next";
 import { type Hex, createPublicClient, decodeEventLog, formatUnits, http } from "viem";
 import { hederaTestnet } from "viem/chains";
 import deployedContracts from "~~/contracts/deployedContracts";
-import { HBAR_ASSET, X402_NETWORK, x402Config } from "~~/services/x402/config";
+import { HBAR_ASSET, X402_NETWORK, x402Setup } from "~~/services/x402/config";
 import { createResourceServer } from "~~/services/x402/server";
 
 const MIRROR = "https://testnet.mirrornode.hedera.com";
@@ -52,7 +52,7 @@ async function handler(): Promise<NextResponse> {
   });
 }
 
-const config = x402Config();
+const { config, error } = x402Setup();
 
 export const GET = config
   ? withX402(
@@ -71,4 +71,5 @@ export const GET = config
       },
       createResourceServer(config.facilitatorUrl),
     )
-  : async () => NextResponse.json({ error: "Payments module not configured: set X402_PAY_TO" }, { status: 503 });
+  : async () =>
+      NextResponse.json({ error: error ?? "Payments module not configured: set X402_PAY_TO" }, { status: 503 });
