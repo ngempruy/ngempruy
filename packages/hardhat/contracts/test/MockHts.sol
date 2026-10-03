@@ -45,6 +45,7 @@ contract MockHts {
     }
 
     function grantTokenKyc(address token, address account) external returns (int64) {
+        if (!associated[token][account]) return TOKEN_NOT_ASSOCIATED_TO_ACCOUNT;
         kyc[token][account] = true;
         return SUCCESS;
     }

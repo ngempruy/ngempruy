@@ -31,13 +31,12 @@ describe("RwaToken", function () {
     expect(await hts.balance(token, investor.address)).to.equal(1_000_000);
   });
 
-  it("surfaces the HTS code when the investor is not associated", async function () {
+  it("surfaces the HTS code when KYC is granted before association", async function () {
     const { rwa, investor } = await fixture();
-    await rwa.grantKyc(investor.address);
-    const transferSelector = ethers.id("transferToken(address,address,address,int64)").slice(0, 10);
-    await expect(rwa.issue(investor.address, 1))
+    const grantSelector = ethers.id("grantTokenKyc(address,address)").slice(0, 10);
+    await expect(rwa.grantKyc(investor.address))
       .to.be.revertedWithCustomError(rwa, "HtsCallFailed")
-      .withArgs(transferSelector, 184);
+      .withArgs(grantSelector, 184);
   });
 
   it("blocks issuance after KYC is revoked", async function () {
@@ -49,7 +48,8 @@ describe("RwaToken", function () {
   });
 
   it("enforces roles and amount bounds", async function () {
-    const { rwa, investor, outsider } = await fixture();
+    const { rwa, hts, token, investor, outsider } = await fixture();
+    await hts.setAssociated(token, investor.address);
     await expect(rwa.connect(outsider).grantKyc(investor.address)).to.be.revertedWithCustomError(
       rwa,
       "AccessControlUnauthorizedAccount",

@@ -89,6 +89,7 @@ contract RwaToken is AccessControl {
         emit TokenCreated(created, name, symbol, decimals);
     }
 
+    /// The account must already be associated with the token, otherwise HTS returns 184.
     function grantKyc(address account) external onlyRole(COMPLIANCE_ROLE) {
         _check(IHederaTokenService.grantTokenKyc.selector, IHederaTokenService(HTS).grantTokenKyc(_token(), account));
         emit KycGranted(account);
@@ -99,8 +100,7 @@ contract RwaToken is AccessControl {
         emit KycRevoked(account);
     }
 
-    /// Mints `amount` (smallest units) and sends it to a KYC'd investor. The investor must be
-    /// associated with the token (or have a free auto-association slot).
+    /// Mints `amount` (smallest units) and sends it to an associated, KYC'd investor.
     function issue(address to, uint256 amount) external onlyRole(ISSUER_ROLE) {
         if (amount == 0) revert ZeroAmount();
         if (amount > uint64(type(int64).max)) revert AmountTooLarge(amount);
