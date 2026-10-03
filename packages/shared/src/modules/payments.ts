@@ -6,6 +6,15 @@ export const payments = defineModule({
   description:
     "x402 pay-per-request APIs settled as native Hedera transfers through a hosted facilitator, plus direct HBAR transfers.",
   requires: ["core"],
+  paths: [
+    "packages/shared/src/modules/payments.ts",
+    "packages/nextjs/app/api/x402",
+    "packages/nextjs/services/x402",
+    "packages/nextjs/scripts/x402-pay.ts",
+    "packages/nextjs/modules/payments",
+  ],
+  scripts: ["x402:pay"],
+  dependencies: ["@x402/core", "@x402/fetch", "@x402/hedera", "@x402/next"],
   env: [
     { key: "X402_PAY_TO", description: "Hedera account id (0.0.x) that receives x402 payments", required: true },
     {
