@@ -979,7 +979,7 @@ const deployedContracts = {
       deployedOnBlock: 41308298,
     },
     SaucerSwapAdapter: {
-      address: "0x729944f2c9bEa04fb643aD63f9dA9867202B2c89",
+      address: "0x8a52E76F24D9D1bEfF9ee7C1bB8757934575A7A1",
       abi: [
         {
           inputs: [
@@ -1288,7 +1288,7 @@ const deployedContracts = {
         renounceOwnership: "@openzeppelin/contracts/access/Ownable.sol",
         transferOwnership: "@openzeppelin/contracts/access/Ownable.sol",
       },
-      deployedOnBlock: 41308886,
+      deployedOnBlock: 41309791,
     },
   },
 } as const;
