@@ -46,6 +46,20 @@ describe("SaucerSwapAdapter", function () {
       .withArgs(90n, 91n);
   });
 
+  it("measures the amount `to` received, not the router's figure", async function () {
+    const { adapter, router, usdc, alice, merchant, path, deadline } = await deployFixture();
+    await router.setTransferFeeBps(1_000); // 10% withheld, like an HTS custom fee
+
+    await expect(adapter.connect(alice).swap(100n, 90n, path, merchant.address, deadline))
+      .to.emit(adapter, "Swapped")
+      .withArgs(alice.address, path[0], path[1], 100n, 90n, merchant.address);
+    expect(await usdc.balanceOf(merchant.address)).to.equal(90n);
+
+    await expect(adapter.connect(alice).swap(100n, 91n, path, merchant.address, deadline))
+      .to.be.revertedWithCustomError(adapter, "InsufficientOutput")
+      .withArgs(90n, 91n);
+  });
+
   it("reverts after the deadline", async function () {
     const { adapter, alice, merchant, path } = await deployFixture();
     const deadline = (await time.latest()) - 1;

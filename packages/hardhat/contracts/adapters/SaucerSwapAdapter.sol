@@ -83,9 +83,12 @@ contract SaucerSwapAdapter is ISwapAdapter, Ownable {
         tokenIn.safeTransferFrom(msg.sender, address(this), amountIn);
         tokenIn.forceApprove(address(router), amountIn);
 
-        uint256[] memory amounts = router.swapExactTokensForTokens(amountIn, minAmountOut, path, to, deadline);
-        amountOut = amounts[amounts.length - 1];
-        // The router enforces this too; checking here gives callers one error type across adapters.
+        // Measure what `to` actually received: HTS custom fees can make it differ from the router's return.
+        IERC20 tokenOut = IERC20(path[path.length - 1]);
+        uint256 balanceBefore = tokenOut.balanceOf(to);
+        router.swapExactTokensForTokens(amountIn, minAmountOut, path, to, deadline);
+        amountOut = tokenOut.balanceOf(to) - balanceBefore;
+        // The router checks its own figure; this checks the received amount with one error type across adapters.
         if (amountOut < minAmountOut) revert InsufficientOutput(amountOut, minAmountOut);
 
         emit Swapped(msg.sender, path[0], path[path.length - 1], amountIn, amountOut, to);
