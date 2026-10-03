@@ -1,15 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Address, createPublicClient, http } from "viem";
+import { hardhat } from "viem/chains";
+import { useFetchBlocks } from "~~/hooks/scaffold-hbar";
+import { useTargetNetwork } from "~~/hooks/scaffold-hbar/useTargetNetwork";
 import { AddressCodeTab } from "./AddressCodeTab";
 import { AddressLogsTab } from "./AddressLogsTab";
 import { AddressStorageTab } from "./AddressStorageTab";
 import { PaginationButton } from "./PaginationButton";
 import { TransactionsTable } from "./TransactionsTable";
-import { Address, createPublicClient, http } from "viem";
-import { hardhat } from "viem/chains";
-import { useFetchBlocks } from "~~/hooks/scaffold-hbar";
-import { useTargetNetwork } from "~~/hooks/scaffold-hbar/useTargetNetwork";
 
 type AddressCodeTabProps = {
   bytecode: string;
@@ -72,14 +72,14 @@ export const ContractTabs = ({ address, contractData }: PageProps) => {
           </button>
           <button
             role="tab"
-            className={`tab  ${activeTab === "storage" ? "tab-active" : ""}`}
+            className={`tab ${activeTab === "storage" ? "tab-active" : ""}`}
             onClick={() => setActiveTab("storage")}
           >
             Storage
           </button>
           <button
             role="tab"
-            className={`tab  ${activeTab === "logs" ? "tab-active" : ""}`}
+            className={`tab ${activeTab === "logs" ? "tab-active" : ""}`}
             onClick={() => setActiveTab("logs")}
           >
             Logs

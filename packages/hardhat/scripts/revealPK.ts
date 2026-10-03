@@ -1,7 +1,8 @@
-import * as dotenv from "dotenv";
-dotenv.config();
-import { Wallet } from "ethers";
 import password from "@inquirer/password";
+import * as dotenv from "dotenv";
+import { Wallet } from "ethers";
+
+dotenv.config();
 
 async function main() {
   const encryptedKey = process.env.DEPLOYER_PRIVATE_KEY_ENCRYPTED;

@@ -1,7 +1,7 @@
-import { auditTopicId } from "./resources";
 import { TopicMessageSubmitTransaction } from "@hiero-ledger/sdk";
 import { type AuditEntry, encodeAuditEntry } from "@sh/shared";
 import { operatorClient } from "~~/services/hedera/operator";
+import { auditTopicId } from "./resources";
 
 const TESTNET_CHAIN_ID = 296;
 

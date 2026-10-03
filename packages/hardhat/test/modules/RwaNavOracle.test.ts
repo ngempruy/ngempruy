@@ -1,6 +1,6 @@
+import { time } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { time } from "@nomicfoundation/hardhat-network-helpers";
 
 describe("RwaNavOracle", function () {
   const ONE_DAY = 86_400;

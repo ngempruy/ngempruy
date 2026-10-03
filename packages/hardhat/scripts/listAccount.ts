@@ -1,9 +1,10 @@
-import * as dotenv from "dotenv";
-dotenv.config();
-import { ethers, Wallet } from "ethers";
-import QRCode from "qrcode";
-import { config } from "hardhat";
 import password from "@inquirer/password";
+import * as dotenv from "dotenv";
+import { Wallet, ethers } from "ethers";
+import { config } from "hardhat";
+import QRCode from "qrcode";
+
+dotenv.config();
 
 async function main() {
   const encryptedKey = process.env.DEPLOYER_PRIVATE_KEY_ENCRYPTED;

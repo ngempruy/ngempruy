@@ -1,7 +1,7 @@
 import { TopicCreateTransaction, TopicMessageSubmitTransaction } from "@hiero-ledger/sdk";
-import { encodeAuditEntry } from "@sh/shared";
 import type { DeployFunction } from "hardhat-deploy/types";
 import type { HardhatRuntimeEnvironment } from "hardhat/types";
+import { encodeAuditEntry } from "@sh/shared";
 import { MIRROR_NODE, readHederaResources, sdkClientFromDeployer, writeHederaResources } from "../utils/hedera";
 
 /**

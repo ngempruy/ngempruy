@@ -1,8 +1,8 @@
-import { TransactionWithFunction } from "./block";
-import { GenericContractsDeclaration } from "./contract";
 import { Abi, AbiFunction, decodeFunctionData, getAbiItem } from "viem";
 import contractData from "~~/contracts/deployedContracts";
 import scaffoldConfig from "~~/scaffold.config";
+import { TransactionWithFunction } from "./block";
+import { GenericContractsDeclaration } from "./contract";
 
 type ContractsInterfaces = Record<string, Abi>;
 type TransactionType = TransactionWithFunction | null;

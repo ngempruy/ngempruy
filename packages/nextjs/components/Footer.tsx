@@ -15,13 +15,13 @@ export const Footer = () => {
   const { price: nativeCurrencyPrice } = useFetchHbarPrice();
 
   return (
-    <div className="min-h-0 py-5 px-1 mb-11 lg:mb-0">
+    <div className="mb-11 min-h-0 px-1 py-5 lg:mb-0">
       <div>
-        <div className="fixed flex justify-between items-center w-full z-10 p-4 bottom-0 left-0 pointer-events-none">
-          <div className="flex flex-col md:flex-row gap-2 pointer-events-auto">
+        <div className="pointer-events-none fixed bottom-0 left-0 z-10 flex w-full items-center justify-between p-4">
+          <div className="pointer-events-auto flex flex-col gap-2 md:flex-row">
             {nativeCurrencyPrice > 0 && (
               <div>
-                <div className="btn btn-primary btn-sm font-normal gap-1 cursor-auto">
+                <div className="btn btn-primary btn-sm cursor-auto gap-1 font-normal">
                   <CurrencyDollarIcon className="h-4 w-4" />
                   <span>{nativeCurrencyPrice.toFixed(2)}</span>
                 </div>
@@ -34,7 +34,7 @@ export const Footer = () => {
       </div>
       <div className="w-full">
         <ul className="menu menu-horizontal w-full">
-          <div className="flex justify-center items-center gap-3 text-sm w-full text-base-content/60">
+          <div className="text-base-content/60 flex w-full items-center justify-center gap-3 text-sm">
             <a
               href="https://github.com/hedera-dev/scaffold-hbar"
               target="_blank"
@@ -50,7 +50,7 @@ export const Footer = () => {
                 href="https://hedera.com/"
                 target="_blank"
                 rel="noreferrer"
-                className="font-semibold link hover:text-primary"
+                className="link hover:text-primary font-semibold"
               >
                 Hedera
               </a>

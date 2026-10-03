@@ -120,12 +120,12 @@ Use DaisyUI classes, not raw Tailwind when a DaisyUI component exists:
 
 ## Style
 
-| Style | Use |
-| --- | --- |
-| `UpperCamelCase` | types, components |
-| `lowerCamelCase` | variables, functions |
-| `CONSTANT_CASE` | constants |
-| `snake_case` | Hardhat deploy files and Foundry scripts |
+| Style            | Use                                      |
+| ---------------- | ---------------------------------------- |
+| `UpperCamelCase` | types, components                        |
+| `lowerCamelCase` | variables, functions                     |
+| `CONSTANT_CASE`  | constants                                |
+| `snake_case`     | Hardhat deploy files and Foundry scripts |
 
 Next.js imports use the `~~` alias:
 

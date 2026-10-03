@@ -1,16 +1,16 @@
 "use client";
 
 // @refresh reset
-import { AddressInfoDropdown } from "./AddressInfoDropdown";
-import { RevealBurnerPKModal } from "./RevealBurnerPKModal";
-import { SetBurnerPKModal } from "./SetBurnerPKModal";
-import { WrongNetworkDropdown } from "./WrongNetworkDropdown";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Balance } from "@scaffold-hbar-ui/components";
 import { Address } from "viem";
 import { useNetworkColor } from "~~/hooks/scaffold-hbar";
 import { useTargetNetwork } from "~~/hooks/scaffold-hbar/useTargetNetwork";
 import { getBlockExplorerAddressLink } from "~~/utils/scaffold-hbar";
+import { AddressInfoDropdown } from "./AddressInfoDropdown";
+import { RevealBurnerPKModal } from "./RevealBurnerPKModal";
+import { SetBurnerPKModal } from "./SetBurnerPKModal";
+import { WrongNetworkDropdown } from "./WrongNetworkDropdown";
 
 /**
  * Custom Wagmi Connect Button (watch balance + custom design)
@@ -44,7 +44,7 @@ export const RainbowKitCustomConnectButton = () => {
 
               return (
                 <>
-                  <div className="flex flex-col items-center mr-2">
+                  <div className="mr-2 flex flex-col items-center">
                     <Balance
                       address={account.address as Address}
                       style={{

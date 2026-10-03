@@ -1,9 +1,10 @@
-import * as dotenv from "dotenv";
-dotenv.config();
-import { Wallet } from "ethers";
 import password from "@inquirer/password";
 import { spawn } from "child_process";
+import * as dotenv from "dotenv";
+import { Wallet } from "ethers";
 import { config } from "hardhat";
+
+dotenv.config();
 
 /**
  * Unencrypts the private key and runs the hardhat deploy command

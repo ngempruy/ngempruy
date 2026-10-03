@@ -1,6 +1,6 @@
-import { installMockHts } from "../helpers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
+import { installMockHts } from "../helpers";
 
 describe("RwaToken", function () {
   async function fixture() {

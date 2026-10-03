@@ -1,6 +1,6 @@
-import { decodeAuditMessage, encodeAuditEntry } from "../src/audit";
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { decodeAuditMessage, encodeAuditEntry } from "../src/audit";
 
 const now = new Date("2026-10-03T00:00:00Z");
 

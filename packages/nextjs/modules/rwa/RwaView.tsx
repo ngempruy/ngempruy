@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { hashscanUrl } from "@sh/shared";
 import { type Address, erc20Abi, formatUnits, isAddress, keccak256, parseUnits, toBytes } from "viem";
 import { useAccount, useReadContract, useWriteContract } from "wagmi";
+import { hashscanUrl } from "@sh/shared";
 import { useScaffoldReadContract, useScaffoldWriteContract, useTransactor } from "~~/hooks/scaffold-hbar";
 import { recordAudit } from "~~/utils/recordAudit";
 
@@ -71,7 +71,7 @@ export const RwaView = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <Stat label="Token">
           {hasToken ? (
             <a className="link" target="_blank" href={hashscanUrl(TESTNET_CHAIN_ID, "token", tokenIdOf(token))}>
@@ -84,7 +84,7 @@ export const RwaView = () => {
         <Stat label="NAV per unit">
           {nav ? `$${Number(formatUnits(nav, 18)).toLocaleString()}` : "no NAV posted"}
           {!!updatedAt && (
-            <span className="block text-xs text-base-content/60">
+            <span className="text-base-content/60 block text-xs">
               {new Date(Number(updatedAt) * 1000).toISOString()}
             </span>
           )}
@@ -94,7 +94,7 @@ export const RwaView = () => {
         </Stat>
       </section>
 
-      {status && <p className="m-0 text-sm alert">{status}</p>}
+      {status && <p className="alert m-0 text-sm">{status}</p>}
 
       {account && hasToken && (
         <Panel title="Investor" hint="Associate once before receiving units; compliance must also grant you KYC.">
@@ -142,17 +142,17 @@ export const RwaView = () => {
 };
 
 const Stat = ({ label, children }: { label: string; children: React.ReactNode }) => (
-  <div className="bg-base-100 rounded-2xl border border-base-300 p-5">
-    <p className="m-0 text-xs uppercase tracking-wider text-base-content/60">{label}</p>
+  <div className="bg-base-100 border-base-300 rounded-2xl border p-5">
+    <p className="text-base-content/60 m-0 text-xs uppercase tracking-wider">{label}</p>
     <div className="mt-1 font-semibold">{children}</div>
   </div>
 );
 
 const Panel = ({ title, hint, children }: { title: string; hint: string; children: React.ReactNode }) => (
-  <section className="bg-base-100 rounded-2xl border border-base-300 p-5 flex flex-col gap-3">
+  <section className="bg-base-100 border-base-300 flex flex-col gap-3 rounded-2xl border p-5">
     <div>
       <h3 className="m-0 font-bold">{title}</h3>
-      <p className="m-0 text-sm text-base-content/70">{hint}</p>
+      <p className="text-base-content/70 m-0 text-sm">{hint}</p>
     </div>
     {children}
   </section>

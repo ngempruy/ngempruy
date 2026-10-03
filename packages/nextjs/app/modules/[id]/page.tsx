@@ -22,10 +22,10 @@ export default async function ModulePage({ params }: Props) {
   const View = moduleViews[mod.id];
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-5 py-10 flex flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-5 py-10">
       <div>
-        <h1 className="text-3xl font-bold mb-2">{mod.title}</h1>
-        <p className="m-0 text-base-content/70">{mod.description}</p>
+        <h1 className="mb-2 text-3xl font-bold">{mod.title}</h1>
+        <p className="text-base-content/70 m-0">{mod.description}</p>
       </div>
       {missing.length > 0 && <ModuleSetupHint missing={missing} />}
       {View && <View ready={missing.length === 0} />}
