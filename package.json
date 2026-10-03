@@ -29,6 +29,8 @@
     "hardhat:lint-staged": "yarn workspace @sh/hardhat lint-staged",
     "hardhat:test": "yarn workspace @sh/hardhat test",
     "hardhat:verify": "yarn workspace @sh/hardhat verify:contract",
+    "harness:run": "hedera-harness run .harness/spec.yaml",
+    "harness:validate": "hedera-harness validate .harness/spec.yaml",
     "lint": "yarn next:lint && yarn hardhat:lint && yarn shared:check-types",
     "lint-staged": "lint-staged",
     "next:build": "yarn workspace @sh/nextjs build",
@@ -46,6 +48,7 @@
   "packageManager": "yarn@3.2.3",
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "hedera-harness": "1.2.2",
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
     "prettier": "^3.5.3",

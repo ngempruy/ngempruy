@@ -1,0 +1,22 @@
+server:
+  command: yarn next:dev
+  url: http://localhost:3000
+
+routes:
+  - path: /
+    expect:
+      visibleText: ["Hedera DeFi Kit", "Modules"]
+  - path: /modules/core
+    expect:
+      visibleText: ["Core", "Audit log"]
+  - path: /modules/rwa
+    expect:
+      visibleText: ["Real-World Assets", "NAV per unit"]
+  - path: /modules/payments
+    expect:
+      visibleText: ["Payments"]
+
+forbidden:
+  visibleText:
+    - "Application error"
+    - "Unhandled Runtime Error"
