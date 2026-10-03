@@ -37,8 +37,13 @@ async function main() {
       console.log(`  ✓ ${label}\n    https://hashscan.io/${network}/transaction/${response.hash}`);
       if (!kitContract) return;
       const entries = auditEntriesFromReceipt(kitContract.name, kitContract.contract, receipt);
-      const seq = await postAuditEntries(chainId, privateKey, entries);
-      if (seq.length) console.log(`    audit #${seq.join(", #")}: ${entries.map(e => e.action).join(", ")}`);
+      try {
+        const seq = await postAuditEntries(chainId, privateKey, entries);
+        if (seq.length) console.log(`    audit #${seq.join(", #")}: ${entries.map(e => e.action).join(", ")}`);
+      } catch (e) {
+        // The on-chain step succeeded; a missing or foreign audit topic shouldn't abort the demo.
+        console.warn(`    ⚠ audit log skipped: ${e instanceof Error ? e.message : e}`);
+      }
     },
   };
 
