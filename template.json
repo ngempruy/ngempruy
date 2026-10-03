@@ -1,41 +1,34 @@
 {
-  "name": "blank",
-  "description": "Minimal Scaffold-HBAR starter: Next.js, Hardhat or Foundry, sample HTS contracts, no opinionated product UI.",
+  "name": "hedera-defi-kit",
+  "description": "Modular, provider-agnostic DeFi kit for Hedera: RWA (HTS + KYC + NAV oracle), SaucerSwap DEX, x402 payments and an HCS audit log, composable through integration recipes.",
+  "version": "0.1.0",
   "create-scaffold-hbar": {
+    "requirements": { "node": ">=20.18.3" },
     "capabilities": {
       "frontend": ["nextjs-app"],
-      "solidityFramework": ["foundry", "hardhat"],
+      "solidityFramework": ["hardhat"],
       "packageManager": ["yarn", "npm"]
     },
     "defaults": {
       "frontend": "nextjs-app",
-      "solidityFramework": "foundry",
+      "solidityFramework": "hardhat",
       "packageManager": "yarn"
     },
     "outro": {
       "sections": [
         {
-          "title": "Next steps",
+          "title": "Run it",
           "steps": [
-            {
-              "label": "Generate or import a deployer account",
-              "command": "{run:framework:account:generate}"
-            },
-            {
-              "label": "Start a local chain",
-              "command": "{run:framework:chain}"
-            },
-            {
-              "label": "Deploy contracts to that node",
-              "command": "{run:framework:deploy} --network localhost"
-            },
-            {
-              "label": "Start the frontend",
-              "command": "{run:next:dev}"
-            },
-            {
-              "text": "For Hedera testnet/mainnet deploy and verify, see the Scaffold HBAR docs and your chosen package README under packages/hardhat or packages/foundry."
-            }
+            { "label": "Start the frontend (works without a wallet or .env)", "command": "{run:next:dev}" }
+          ]
+        },
+        {
+          "title": "Go on-chain (Hedera testnet)",
+          "steps": [
+            { "label": "Generate an ECDSA deployer account", "command": "{run:framework:account:generate}" },
+            { "label": "Fund it with testnet HBAR", "url": "https://portal.hedera.com/faucet" },
+            { "label": "Deploy the selected modules", "command": "{run:framework:deploy} --network hedera_testnet" },
+            { "text": "See README.md for module selection, env vars and the testnet demo." }
           ]
         }
       ]
