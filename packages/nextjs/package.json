@@ -3,12 +3,12 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "build": "next build",
+    "build": "NODE_OPTIONS=\"--require ./polyfills/node-webstorage.cjs\" next build",
     "check-types": "tsc --noEmit --incremental",
-    "dev": "next dev",
+    "dev": "NODE_OPTIONS=\"--require ./polyfills/node-webstorage.cjs\" next dev",
     "lint": "next lint",
-    "serve": "next start",
-    "start": "next dev",
+    "serve": "NODE_OPTIONS=\"--require ./polyfills/node-webstorage.cjs\" next start",
+    "start": "NODE_OPTIONS=\"--require ./polyfills/node-webstorage.cjs\" next dev",
     "x402:pay": "tsx --env-file=.env.local scripts/x402-pay.ts"
   },
   "dependencies": {

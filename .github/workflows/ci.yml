@@ -28,6 +28,19 @@ jobs:
       - run: yarn hardhat:test
       - run: yarn next:build
 
+  current-node:
+    name: Build on Node 25
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 25
+          cache: yarn
+      - run: yarn install --immutable
+      # Node 25 ships a localStorage stub that breaks server rendering without polyfills/node-webstorage.cjs.
+      - run: yarn next:build
+
   configure:
     name: Modules ${{ matrix.modules }}
     runs-on: ubuntu-latest
