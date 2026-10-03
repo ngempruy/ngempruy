@@ -4,7 +4,7 @@ import { SAUCERSWAP_TESTNET } from "../utils/saucerswap";
 
 /**
  * Wraps 1 HBAR and swaps it to USDC through the deployed SaucerSwapAdapter, then prints the
- * HashScan link. Run with `yarn hardhat:dex:swap --network hederaTestnet` after `--tags dex`.
+ * HashScan link. Run with `yarn hardhat:dex:swap --network hederaTestnet` after `yarn hardhat:deploy --network hederaTestnet --tags dex`.
  */
 const WRAP_HBAR = ethers.parseEther("1"); // JSON-RPC values are weibar: 1e18 per HBAR
 const WHBAR_AMOUNT = 100_000_000n; // 1 WHBAR, 8 decimals
