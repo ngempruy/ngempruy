@@ -34,33 +34,33 @@ export const RevealBurnerPKModal = () => {
     <div>
       <input type="checkbox" id="reveal-burner-pk-modal" className="modal-toggle" ref={modalCheckboxRef} />
       <label htmlFor="reveal-burner-pk-modal" className="modal cursor-pointer">
-        <label className="modal-box relative bg-base-100 border border-base-300 rounded-2xl shadow-xl p-6 max-w-md">
-          <input className="h-0 w-0 absolute top-0 left-0" />
+        <label className="modal-box bg-base-100 border-base-300 relative max-w-md rounded-2xl border p-6 shadow-xl">
+          <input className="absolute left-0 top-0 h-0 w-0" />
 
           <label
             htmlFor="reveal-burner-pk-modal"
-            className="btn btn-ghost btn-sm btn-circle absolute right-3 top-3 text-base-content/50 hover:text-base-content"
+            className="btn btn-ghost btn-sm btn-circle text-base-content/50 hover:text-base-content absolute right-3 top-3"
           >
             <XMarkIcon className="h-4 w-4" />
           </label>
 
-          <div className="flex items-center gap-3 mb-5">
-            <div className="p-2 rounded-xl hedera-gradient">
+          <div className="mb-5 flex items-center gap-3">
+            <div className="hedera-gradient rounded-xl p-2">
               <KeyIcon className="h-5 w-5 text-white" />
             </div>
-            <h3 className="text-base font-semibold text-base-content m-0">Burner Wallet Private Key</h3>
+            <h3 className="text-base-content m-0 text-base font-semibold">Burner Wallet Private Key</h3>
           </div>
 
-          <div className="flex items-start gap-3 rounded-xl bg-warning/10 border border-warning/30 p-4 mb-4">
-            <ShieldExclamationIcon className="h-5 w-5 text-warning shrink-0 mt-0.5" />
-            <p className="text-sm text-warning font-medium m-0">
+          <div className="bg-warning/10 border-warning/30 mb-4 flex items-start gap-3 rounded-xl border p-4">
+            <ShieldExclamationIcon className="text-warning mt-0.5 h-5 w-5 shrink-0" />
+            <p className="text-warning m-0 text-sm font-medium">
               Burner wallets are for testnet development only. Never use for real funds.
             </p>
           </div>
 
-          <p className="text-sm text-base-content/70 mb-5 m-0">
-            Your private key grants <span className="font-semibold text-base-content">full access</span> to this wallet.
-            It is stored <span className="font-semibold text-base-content">temporarily</span> in your browser and will
+          <p className="text-base-content/70 m-0 mb-5 text-sm">
+            Your private key grants <span className="text-base-content font-semibold">full access</span> to this wallet.
+            It is stored <span className="text-base-content font-semibold">temporarily</span> in your browser and will
             be lost if you clear site data.
           </p>
 

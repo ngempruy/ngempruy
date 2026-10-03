@@ -34,6 +34,10 @@ export function decodeAuditMessage(base64: string): (AuditEntry & { ts: string }
 const HASHSCAN_NETWORK: Record<number, string> = { 295: "mainnet", 296: "testnet" };
 
 /** HashScan link for a Hedera entity or transaction on chain 295/296. */
-export function hashscanUrl(chainId: number, kind: "topic" | "token" | "contract" | "account" | "transaction", id: string) {
+export function hashscanUrl(
+  chainId: number,
+  kind: "topic" | "token" | "contract" | "account" | "transaction",
+  id: string,
+) {
   return `https://hashscan.io/${HASHSCAN_NETWORK[chainId] ?? "testnet"}/${kind}/${id}`;
 }

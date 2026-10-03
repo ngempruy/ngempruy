@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { PaginationButton, SearchBar, TransactionsTable } from "./_components";
 import type { NextPage } from "next";
 import { Block, Transaction, TransactionReceipt } from "viem";
 import { hardhat } from "viem/chains";
@@ -9,6 +8,7 @@ import { useFetchBlocks } from "~~/hooks/scaffold-hbar";
 import { useTargetNetwork } from "~~/hooks/scaffold-hbar/useTargetNetwork";
 import { notification } from "~~/utils/scaffold-hbar";
 import { useAllContracts } from "~~/utils/scaffold-hbar/contractsData";
+import { PaginationButton, SearchBar, TransactionsTable } from "./_components";
 
 const BlockExplorer: NextPage = () => {
   const { targetNetwork } = useTargetNetwork();
@@ -50,13 +50,13 @@ const BlockExplorer: NextPage = () => {
     if (hasError) {
       notification.error(
         <>
-          <p className="font-bold mt-0 mb-1">Cannot connect to local provider</p>
+          <p className="mb-1 mt-0 font-bold">Cannot connect to local provider</p>
           <p className="m-0">
-            - Did you forget to run <code className="italic bg-base-300 text-base font-bold">yarn hardhat:chain</code> ?
+            - Did you forget to run <code className="bg-base-300 text-base font-bold italic">yarn hardhat:chain</code> ?
           </p>
           <p className="mt-1 break-normal">
-            - Or you can change <code className="italic bg-base-300 text-base font-bold">targetNetwork</code> in{" "}
-            <code className="italic bg-base-300 text-base font-bold">scaffold.config.ts</code>
+            - Or you can change <code className="bg-base-300 text-base font-bold italic">targetNetwork</code> in{" "}
+            <code className="bg-base-300 text-base font-bold italic">scaffold.config.ts</code>
           </p>
         </>,
       );
@@ -70,13 +70,13 @@ const BlockExplorer: NextPage = () => {
     return (
       <div className="container mx-auto my-10">
         <div className="flex justify-center p-8">
-          <div className="max-w-xl text-center text-base-content/80">
-            <p className="font-bold mb-2">
-              <code className="italic bg-base-300 text-base font-bold">targetNetwork</code> is not localhost
+          <div className="text-base-content/80 max-w-xl text-center">
+            <p className="mb-2 font-bold">
+              <code className="bg-base-300 text-base font-bold italic">targetNetwork</code> is not localhost
             </p>
             <p className="mb-2">
-              You are on <code className="italic bg-base-300 text-base font-bold">{targetNetwork.name}</code>. This
-              block explorer is only for <code className="italic bg-base-300 text-base font-bold">localhost</code>.
+              You are on <code className="bg-base-300 text-base font-bold italic">{targetNetwork.name}</code>. This
+              block explorer is only for <code className="bg-base-300 text-base font-bold italic">localhost</code>.
             </p>
             {targetNetwork.blockExplorers?.default && (
               <p>
@@ -103,16 +103,16 @@ const BlockExplorer: NextPage = () => {
       <SearchBar />
       {hasContracts && !hasTransactions && blocks.length > 0 && (
         <div className="flex justify-center p-8">
-          <p className="text-lg text-base-content/70">
+          <p className="text-base-content/70 text-lg">
             No transactions involving your contracts found in the latest blocks.
           </p>
         </div>
       )}
       {!hasContracts && (
         <div className="flex justify-center p-8">
-          <p className="text-lg text-base-content/70">
+          <p className="text-base-content/70 text-lg">
             No contracts registered. Deploy a contract or add entries to{" "}
-            <code className="italic bg-base-300 text-base font-bold">externalContracts.ts</code>.
+            <code className="bg-base-300 text-base font-bold italic">externalContracts.ts</code>.
           </p>
         </div>
       )}

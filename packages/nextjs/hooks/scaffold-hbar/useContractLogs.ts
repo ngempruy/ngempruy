@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { useTargetNetwork } from "./useTargetNetwork";
 import { Address, Log } from "viem";
 import { usePublicClient } from "wagmi";
 import deployedContracts from "~~/contracts/deployedContracts";
 import { GenericContractsDeclaration } from "~~/utils/scaffold-hbar/contract";
+import { useTargetNetwork } from "./useTargetNetwork";
 
 function getDeployedOnBlock(chainId: number, address: Address): bigint {
   const contracts = deployedContracts as GenericContractsDeclaration | null;

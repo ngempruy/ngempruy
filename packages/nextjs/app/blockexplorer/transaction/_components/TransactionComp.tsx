@@ -38,14 +38,14 @@ const TransactionComp = ({ txHash }: { txHash: Hash }) => {
   }, [client, txHash]);
 
   return (
-    <div className="container mx-auto mt-10 mb-20 px-10 md:px-0">
+    <div className="container mx-auto mb-20 mt-10 px-10 md:px-0">
       <button className="btn btn-sm btn-primary" onClick={() => router.back()}>
         Back
       </button>
       {transaction ? (
         <div className="overflow-x-auto">
-          <h2 className="text-3xl font-bold mb-4 text-center text-primary-content">Transaction Details</h2>{" "}
-          <table className="table rounded-lg bg-base-100 w-full shadow-lg md:table-lg table-md">
+          <h2 className="text-primary-content mb-4 text-center text-3xl font-bold">Transaction Details</h2>{" "}
+          <table className="bg-base-100 md:table-lg table-md table w-full rounded-lg shadow-lg">
             <tbody>
               <tr>
                 <td>
@@ -117,7 +117,7 @@ const TransactionComp = ({ txHash }: { txHash: Hash }) => {
                   <strong>Function called:</strong>
                 </td>
                 <td>
-                  <div className="w-full md:max-w-[600px] lg:max-w-[800px] overflow-x-auto whitespace-nowrap">
+                  <div className="w-full overflow-x-auto whitespace-nowrap md:max-w-[600px] lg:max-w-[800px]">
                     {functionCalled === "0x" ? (
                       "This transaction did not call any function."
                     ) : (
@@ -143,7 +143,7 @@ const TransactionComp = ({ txHash }: { txHash: Hash }) => {
                   <textarea
                     readOnly
                     value={transaction.input}
-                    className="p-0 w-full textarea-primary bg-inherit h-[150px]"
+                    className="textarea-primary h-[150px] w-full bg-inherit p-0"
                   />
                 </td>
               </tr>
@@ -165,7 +165,7 @@ const TransactionComp = ({ txHash }: { txHash: Hash }) => {
           </table>
         </div>
       ) : (
-        <p className="text-2xl text-base-content">Loading...</p>
+        <p className="text-base-content text-2xl">Loading...</p>
       )}
     </div>
   );

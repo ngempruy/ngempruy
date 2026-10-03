@@ -21,9 +21,9 @@ export const HederaAddress = ({ address, chain, format, disableAddressLink }: He
 
   if (!address) {
     return (
-      <div className="flex items-center gap-2 animate-pulse">
-        <div className="w-6 h-6 rounded-full bg-base-300" />
-        <div className="w-32 h-4 rounded bg-base-300" />
+      <div className="flex animate-pulse items-center gap-2">
+        <div className="bg-base-300 h-6 w-6 rounded-full" />
+        <div className="bg-base-300 h-4 w-32 rounded" />
       </div>
     );
   }
@@ -52,18 +52,18 @@ export const HederaAddress = ({ address, chain, format, disableAddressLink }: He
             {addressContent}
           </a>
         )}
-        <button type="button" className="btn btn-ghost btn-xs p-0 min-h-0 h-auto" onClick={handleCopy}>
+        <button type="button" className="btn btn-ghost btn-xs h-auto min-h-0 p-0" onClick={handleCopy}>
           {copied ? (
-            <CheckCircleIcon className="w-4 h-4 text-success" />
+            <CheckCircleIcon className="text-success h-4 w-4" />
           ) : (
-            <DocumentDuplicateIcon className="w-4 h-4 opacity-70 hover:opacity-100" />
+            <DocumentDuplicateIcon className="h-4 w-4 opacity-70 hover:opacity-100" />
           )}
         </button>
       </div>
       {isLoading ? (
-        <span className="text-xs text-base-content/60 animate-pulse">Resolving Hedera Account ID…</span>
+        <span className="text-base-content/60 animate-pulse text-xs">Resolving Hedera Account ID…</span>
       ) : accountId ? (
-        <span className="text-xs text-base-content/80">Hedera Account ID: {accountId}</span>
+        <span className="text-base-content/80 text-xs">Hedera Account ID: {accountId}</span>
       ) : null}
     </div>
   );
