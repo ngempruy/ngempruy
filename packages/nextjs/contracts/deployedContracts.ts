@@ -979,7 +979,7 @@ const deployedContracts = {
       deployedOnBlock: 41308298,
     },
     SaucerSwapAdapter: {
-      address: "0x8a52E76F24D9D1bEfF9ee7C1bB8757934575A7A1",
+      address: "0xbD94343F7b0Eabe52D69B0F41240788Cf8036e3d",
       abi: [
         {
           inputs: [
@@ -1288,7 +1288,789 @@ const deployedContracts = {
         renounceOwnership: "@openzeppelin/contracts/access/Ownable.sol",
         transferOwnership: "@openzeppelin/contracts/access/Ownable.sol",
       },
-      deployedOnBlock: 41309791,
+      deployedOnBlock: 41310136,
+    },
+    SaucerSwapFlashLoan: {
+      address: "0x32b59803549CB968346E2d854ed1398ef1EDB0Bd",
+      abi: [
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "owner_",
+              type: "address",
+            },
+            {
+              internalType: "contract ISwapAdapter",
+              name: "swapAdapter_",
+              type: "address",
+            },
+            {
+              internalType: "contract IBonzoLendingPool",
+              name: "liquidationPool_",
+              type: "address",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "constructor",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "token",
+              type: "address",
+            },
+            {
+              internalType: "int64",
+              name: "responseCode",
+              type: "int64",
+            },
+          ],
+          name: "AssociationFailed",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "asset",
+              type: "address",
+            },
+          ],
+          name: "NoFlashPair",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "NotActivePair",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "NotSelfInitiated",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+          ],
+          name: "OwnableInvalidOwner",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "account",
+              type: "address",
+            },
+          ],
+          name: "OwnableUnauthorizedAccount",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "int256",
+              name: "pnl",
+              type: "int256",
+            },
+            {
+              internalType: "int256",
+              name: "minPnl",
+              type: "int256",
+            },
+          ],
+          name: "PnlBelowMinimum",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "token",
+              type: "address",
+            },
+          ],
+          name: "SafeERC20FailedOperation",
+          type: "error",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "enum FlashLoanStrategies.Strategy",
+              name: "strategy",
+              type: "uint8",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "asset",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "amount",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "fee",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "int256",
+              name: "pnl",
+              type: "int256",
+            },
+          ],
+          name: "FlashLoanExecuted",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "asset",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "address",
+              name: "pair",
+              type: "address",
+            },
+          ],
+          name: "FlashPairSet",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "previousOwner",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "newOwner",
+              type: "address",
+            },
+          ],
+          name: "OwnershipTransferred",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "token",
+              type: "address",
+            },
+          ],
+          name: "TokenAssociated",
+          type: "event",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "token",
+              type: "address",
+            },
+          ],
+          name: "associate",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "asset",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "amount",
+              type: "uint256",
+            },
+            {
+              internalType: "address[]",
+              name: "pathOut",
+              type: "address[]",
+            },
+            {
+              internalType: "address[]",
+              name: "pathBack",
+              type: "address[]",
+            },
+            {
+              internalType: "int256",
+              name: "minPnl",
+              type: "int256",
+            },
+          ],
+          name: "flashArbitrage",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "debtAsset",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "debtToCover",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "collateral",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "user",
+              type: "address",
+            },
+            {
+              internalType: "address[]",
+              name: "path",
+              type: "address[]",
+            },
+            {
+              internalType: "int256",
+              name: "minPnl",
+              type: "int256",
+            },
+          ],
+          name: "flashLiquidate",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "asset",
+              type: "address",
+            },
+          ],
+          name: "flashPairs",
+          outputs: [
+            {
+              internalType: "contract ISaucerSwapPair",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "lendingPool",
+          outputs: [
+            {
+              internalType: "contract IBonzoLendingPool",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "owner",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "renounceOwnership",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "asset",
+              type: "address",
+            },
+            {
+              internalType: "contract ISaucerSwapPair",
+              name: "pair",
+              type: "address",
+            },
+          ],
+          name: "setFlashPair",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "swapAdapter",
+          outputs: [
+            {
+              internalType: "contract ISwapAdapter",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "newOwner",
+              type: "address",
+            },
+          ],
+          name: "transferOwnership",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "sender",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "amount0",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "amount1",
+              type: "uint256",
+            },
+            {
+              internalType: "bytes",
+              name: "params",
+              type: "bytes",
+            },
+          ],
+          name: "uniswapV2Call",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+      ],
+      inheritedFunctions: {
+        associate: "contracts/modules/flashloan/FlashLoanStrategies.sol",
+        flashArbitrage: "contracts/modules/flashloan/FlashLoanStrategies.sol",
+        flashLiquidate: "contracts/modules/flashloan/FlashLoanStrategies.sol",
+        lendingPool: "contracts/modules/flashloan/FlashLoanStrategies.sol",
+        owner: "contracts/modules/flashloan/FlashLoanStrategies.sol",
+        renounceOwnership: "contracts/modules/flashloan/FlashLoanStrategies.sol",
+        swapAdapter: "contracts/modules/flashloan/FlashLoanStrategies.sol",
+        transferOwnership: "contracts/modules/flashloan/FlashLoanStrategies.sol",
+      },
+      deployedOnBlock: 41310529,
+    },
+    BonzoFlashLoan: {
+      address: "0x3307477C33229b62976E8130b85a7D75e47d5Ea8",
+      abi: [
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "owner_",
+              type: "address",
+            },
+            {
+              internalType: "contract IBonzoLendingPool",
+              name: "pool_",
+              type: "address",
+            },
+            {
+              internalType: "contract ISwapAdapter",
+              name: "swapAdapter_",
+              type: "address",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "constructor",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "token",
+              type: "address",
+            },
+            {
+              internalType: "int64",
+              name: "responseCode",
+              type: "int64",
+            },
+          ],
+          name: "AssociationFailed",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "NotPool",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "NotSelfInitiated",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+          ],
+          name: "OwnableInvalidOwner",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "account",
+              type: "address",
+            },
+          ],
+          name: "OwnableUnauthorizedAccount",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "int256",
+              name: "pnl",
+              type: "int256",
+            },
+            {
+              internalType: "int256",
+              name: "minPnl",
+              type: "int256",
+            },
+          ],
+          name: "PnlBelowMinimum",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "token",
+              type: "address",
+            },
+          ],
+          name: "SafeERC20FailedOperation",
+          type: "error",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "enum FlashLoanStrategies.Strategy",
+              name: "strategy",
+              type: "uint8",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "asset",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "amount",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "fee",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "int256",
+              name: "pnl",
+              type: "int256",
+            },
+          ],
+          name: "FlashLoanExecuted",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "previousOwner",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "newOwner",
+              type: "address",
+            },
+          ],
+          name: "OwnershipTransferred",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "token",
+              type: "address",
+            },
+          ],
+          name: "TokenAssociated",
+          type: "event",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "token",
+              type: "address",
+            },
+          ],
+          name: "associate",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address[]",
+              name: "assets",
+              type: "address[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "amounts",
+              type: "uint256[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "premiums",
+              type: "uint256[]",
+            },
+            {
+              internalType: "address",
+              name: "initiator",
+              type: "address",
+            },
+            {
+              internalType: "bytes",
+              name: "params",
+              type: "bytes",
+            },
+          ],
+          name: "executeOperation",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "asset",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "amount",
+              type: "uint256",
+            },
+            {
+              internalType: "address[]",
+              name: "pathOut",
+              type: "address[]",
+            },
+            {
+              internalType: "address[]",
+              name: "pathBack",
+              type: "address[]",
+            },
+            {
+              internalType: "int256",
+              name: "minPnl",
+              type: "int256",
+            },
+          ],
+          name: "flashArbitrage",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "debtAsset",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "debtToCover",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "collateral",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "user",
+              type: "address",
+            },
+            {
+              internalType: "address[]",
+              name: "path",
+              type: "address[]",
+            },
+            {
+              internalType: "int256",
+              name: "minPnl",
+              type: "int256",
+            },
+          ],
+          name: "flashLiquidate",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "lendingPool",
+          outputs: [
+            {
+              internalType: "contract IBonzoLendingPool",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "owner",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "renounceOwnership",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "swapAdapter",
+          outputs: [
+            {
+              internalType: "contract ISwapAdapter",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "newOwner",
+              type: "address",
+            },
+          ],
+          name: "transferOwnership",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+      ],
+      inheritedFunctions: {
+        associate: "contracts/modules/flashloan/FlashLoanStrategies.sol",
+        flashArbitrage: "contracts/modules/flashloan/FlashLoanStrategies.sol",
+        flashLiquidate: "contracts/modules/flashloan/FlashLoanStrategies.sol",
+        lendingPool: "contracts/modules/flashloan/FlashLoanStrategies.sol",
+        owner: "contracts/modules/flashloan/FlashLoanStrategies.sol",
+        renounceOwnership: "contracts/modules/flashloan/FlashLoanStrategies.sol",
+        swapAdapter: "contracts/modules/flashloan/FlashLoanStrategies.sol",
+        transferOwnership: "contracts/modules/flashloan/FlashLoanStrategies.sol",
+      },
+      deployedOnBlock: 41310555,
     },
   },
 } as const;

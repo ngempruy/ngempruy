@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { HtsAssociation } from "../core/HtsAssociation.sol";
 import { ISwapAdapter } from "../core/ISwapAdapter.sol";
 
 /// Subset of the SaucerSwap V1 router (a Uniswap V2 fork) used by the adapter.
@@ -23,12 +24,8 @@ interface ISaucerSwapRouter {
 /// Hedera testnet router: 0.0.19264 (0x...4b40). Native HBAR goes through WHBAR (token 0.0.15058).
 /// The adapter holds tokens mid-swap, so every HTS token in a path must be associated with it
 /// first via `associate`.
-contract SaucerSwapAdapter is ISwapAdapter, Ownable {
+contract SaucerSwapAdapter is ISwapAdapter, HtsAssociation, Ownable {
     using SafeERC20 for IERC20;
-
-    address private constant HTS = address(0x167);
-    int64 private constant HTS_SUCCESS = 22;
-    int64 private constant HTS_TOKEN_ALREADY_ASSOCIATED = 194;
 
     ISaucerSwapRouter public immutable router;
 
@@ -36,9 +33,7 @@ contract SaucerSwapAdapter is ISwapAdapter, Ownable {
     error InvalidPath();
     error Expired(uint256 deadline);
     error InsufficientOutput(uint256 amountOut, uint256 minAmountOut);
-    error AssociationFailed(address token, int64 responseCode);
 
-    event TokenAssociated(address indexed token);
     event Swapped(
         address indexed caller,
         address indexed tokenIn,
@@ -52,14 +47,9 @@ contract SaucerSwapAdapter is ISwapAdapter, Ownable {
         router = router_;
     }
 
-    /// Associates the adapter with an HTS token through the HTS precompile. Idempotent.
+    /// Associates the adapter with an HTS token. Idempotent.
     function associate(address token) external onlyOwner {
-        (bool ok, bytes memory result) = HTS.call(
-            abi.encodeWithSignature("associateToken(address,address)", address(this), token)
-        );
-        int64 code = ok && result.length == 32 ? abi.decode(result, (int64)) : int64(-1);
-        if (code != HTS_SUCCESS && code != HTS_TOKEN_ALREADY_ASSOCIATED) revert AssociationFailed(token, code);
-        emit TokenAssociated(token);
+        _associate(token);
     }
 
     function quote(uint256 amountIn, address[] calldata path) external view returns (uint256) {
