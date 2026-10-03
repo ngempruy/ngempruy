@@ -4,6 +4,7 @@ import path from "path";
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname, "../.."),
   reactStrictMode: true,
+  transpilePackages: ["@sh/shared"],
   devIndicators: false,
   typescript: {
     ignoreBuildErrors: process.env.NEXT_PUBLIC_IGNORE_BUILD_ERROR === "true",
