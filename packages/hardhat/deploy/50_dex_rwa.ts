@@ -67,10 +67,11 @@ const deployDexRwa: DeployFunction = async function (hre: HardhatRuntimeEnvironm
     const value = ((tinybars * 12n) / 10n) * 10_000_000_000n; // +20% for rate drift; weibars
     await (await factory.createPair(token, usdc, { value, gasLimit: 8_000_000 })).wait();
     pair = await factory.getPair(token, usdc);
-    // The pair holds the KYC-gated token, so it needs KYC like any holder.
-    await (await rwa.grantKyc(pair, { gasLimit: 400_000 })).wait();
     console.log(`RWA/USDC pair ${pair}: https://hashscan.io/testnet/contract/${pair}`);
   }
+  // The pair holds the KYC-gated token, so it needs KYC like any holder. Idempotent, so it also
+  // covers a pair someone else created or a rerun after a partial failure.
+  await (await rwa.grantKyc(pair, { gasLimit: 400_000 })).wait();
 
   const lpToken: string = await new ethers.Contract(
     pair,
