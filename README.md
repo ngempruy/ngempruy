@@ -51,6 +51,7 @@ Everything below was produced by this repo's deploy and demo scripts (deployer `
 | Compliance grants KYC                                 | [0xc168…6a27](https://hashscan.io/testnet/transaction/0xc168ae6f5d1f8ba0050a7d93a58b184774f19902f5b0022b2f9fcf01df8c6a27) |
 | Issuer issues 10 units                                | [0x41b0…580f](https://hashscan.io/testnet/transaction/0x41b05e65841c7a893c3476e8aff842d384b36fddd27f4977fa9b5e70daef580f) |
 | Appraiser posts NAV                                   | [0x25f3…9afc](https://hashscan.io/testnet/transaction/0x25f3afb511d06459560cc514aed9b8b543ce68cdd7659a59855a4afe77e99afc) |
+| x402 paid NAV report (`rwa+payments` recipe)          | [0.0.7162784-1791041416-286483229](https://hashscan.io/testnet/transaction/0.0.7162784-1791041416-286483229)              |
 | x402 settlement (fee paid by Blocky402 `0.0.7162784`) | [0.0.7162784-1791039263-792561927](https://hashscan.io/testnet/transaction/0.0.7162784-1791039263-792561927)              |
 
 The scaffolded app is pre-wired to these ids (`packages/nextjs/contracts/`), so the audit feed and RWA page show live data before you deploy anything.
@@ -85,6 +86,14 @@ For the web app's server-side actions (audit writes, x402), copy `packages/nextj
 | `payments`         | x402 pay-per-request API, capped agent payer, direct HBAR transfers                                                                         | Native transfers, x402 facilitator             | `/modules/payments` |
 
 A module whose required env vars are missing still renders: it shows a setup hint and disables actions that need signing.
+
+### Integration recipes
+
+| Recipe         | Active when          | What it adds                                                                                                            |
+| -------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `rwa+payments` | `rwa` and `payments` | `GET /api/x402/nav-report`: the RWA's NAV and appraisal history (decoded `NavPosted` events) sold per request over x402 |
+
+A recipe lives in `packages/shared/src/integrations/<a>+<b>.ts`, owns its own files, and is removed by `yarn configure` as soon as one of its modules is dropped. Try it with `yarn x402:pay http://localhost:3000/api/x402/nav-report`.
 
 ### Choosing modules
 
