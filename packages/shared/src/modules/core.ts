@@ -1,4 +1,4 @@
-import { defineModule } from "./define";
+import { defineModule } from "../define";
 
 export const core = defineModule({
   id: "core",
