@@ -75,4 +75,13 @@ describe("NavBandSwap (dex+rwa)", function () {
     const empty = await fixture(0);
     await expect(empty.guard.previewBuy(usdc("100"))).to.be.revertedWithCustomError(empty.guard, "NoLiquidity");
   });
+
+  it("rejects token decimals above 18 at deploy time", async function () {
+    const factory = await ethers.getContractFactory("NavBandSwap");
+    const zero = ethers.ZeroAddress;
+    await expect(factory.deploy(zero, zero, zero, 6, zero, 19, DAY, BAND_BPS)).to.be.revertedWithCustomError(
+      factory,
+      "UnsupportedDecimals",
+    );
+  });
 });

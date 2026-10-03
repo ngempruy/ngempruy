@@ -29,6 +29,7 @@ contract NavBandSwap is HtsAssociation {
     event BoughtNearNav(address indexed buyer, uint256 quoteIn, uint256 rwaOut, uint256 navPerUnit, int256 premiumBps);
 
     error NoLiquidity();
+    error UnsupportedDecimals();
     error AboveNavBand(int256 premiumBps, uint16 bandBps);
 
     constructor(
@@ -41,6 +42,7 @@ contract NavBandSwap is HtsAssociation {
         uint256 maxNavAge_,
         uint16 bandBps_
     ) {
+        if (rwaDecimals_ > 18 || quoteDecimals_ > 18) revert UnsupportedDecimals();
         adapter = adapter_;
         oracle = oracle_;
         rwaToken = rwaToken_;
@@ -61,21 +63,34 @@ contract NavBandSwap is HtsAssociation {
     /// (positive = premium, negative = discount), in basis points.
     function previewBuy(uint256 quoteIn) public view returns (uint256 rwaOut, uint256 nav, int256 premiumBps) {
         rwaOut = adapter.quote(quoteIn, _path());
-        if (rwaOut == 0) revert NoLiquidity();
         nav = oracle.navPerUnit(maxNavAge);
-        // USD paid per whole RWA unit, 18 decimals.
-        uint256 paid = (quoteIn * 10 ** (18 - quoteDecimals) * 10 ** rwaDecimals) / rwaOut;
-        premiumBps = ((int256(paid) - int256(nav)) * 10_000) / int256(nav);
+        premiumBps = _premiumBps(quoteIn, rwaOut, nav);
     }
 
+    /// Checks the band on the quote and again on what was actually received, so an HTS custom
+    /// fee on the RWA token cannot push the real price above the band unnoticed.
     function buy(uint256 quoteIn, uint256 minRwaOut, uint256 deadline) external returns (uint256 rwaOut) {
-        (, uint256 nav, int256 premiumBps) = previewBuy(quoteIn);
-        if (premiumBps > int256(uint256(bandBps))) revert AboveNavBand(premiumBps, bandBps);
+        (, uint256 nav, int256 quotedPremium) = previewBuy(quoteIn);
+        _checkBand(quotedPremium);
 
         IERC20(quoteToken).safeTransferFrom(msg.sender, address(this), quoteIn);
         IERC20(quoteToken).forceApprove(address(adapter), quoteIn);
         rwaOut = adapter.swap(quoteIn, minRwaOut, _path(), msg.sender, deadline);
+
+        int256 premiumBps = _premiumBps(quoteIn, rwaOut, nav);
+        _checkBand(premiumBps);
         emit BoughtNearNav(msg.sender, quoteIn, rwaOut, nav, premiumBps);
+    }
+
+    /// USD paid per whole RWA unit (18 decimals) relative to NAV, in basis points.
+    function _premiumBps(uint256 quoteIn, uint256 rwaOut, uint256 nav) internal view returns (int256) {
+        if (rwaOut == 0) revert NoLiquidity();
+        uint256 paid = (quoteIn * 10 ** (18 - quoteDecimals) * 10 ** rwaDecimals) / rwaOut;
+        return ((int256(paid) - int256(nav)) * 10_000) / int256(nav);
+    }
+
+    function _checkBand(int256 premiumBps) internal view {
+        if (premiumBps > int256(uint256(bandBps))) revert AboveNavBand(premiumBps, bandBps);
     }
 
     function _path() internal view returns (address[] memory path) {
