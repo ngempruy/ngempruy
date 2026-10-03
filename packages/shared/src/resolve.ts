@@ -57,3 +57,8 @@ export function resolveModules(
     env: [...env.values()],
   };
 }
+
+/** Required env vars of a module or recipe that are unset or blank. */
+export function missingEnv(item: { env: EnvVar[] }, env: Record<string, string | undefined>): EnvVar[] {
+  return item.env.filter(v => v.required && !env[v.key]?.trim());
+}

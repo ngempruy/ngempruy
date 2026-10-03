@@ -3410,6 +3410,7 @@ __metadata:
     "@scaffold-hbar-ui/components": ^2.0.0
     "@scaffold-hbar-ui/debug-contracts": ^2.0.0
     "@scaffold-hbar-ui/hooks": ^1.1.0
+    "@sh/shared": 0.0.1
     "@tailwindcss/postcss": latest
     "@tanstack/react-query": ^5.59.15
     "@trivago/prettier-plugin-sort-imports": ^4.3.0
@@ -3442,11 +3443,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@sh/shared@workspace:packages/shared":
+"@sh/shared@0.0.1, @sh/shared@workspace:packages/shared":
   version: 0.0.0-use.local
   resolution: "@sh/shared@workspace:packages/shared"
   dependencies:
     "@types/node": ^18.19.50
+    prettier: ^3.5.3
     tsx: ~4.20.3
     typescript: ^5.8.2
   languageName: unknown

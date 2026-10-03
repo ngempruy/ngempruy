@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { defineIntegration, defineModule } from "../src/define";
 import { integrations, modules } from "../src/modules.config";
-import { resolveModules } from "../src/resolve";
+import { missingEnv, resolveModules } from "../src/resolve";
 
 const core = defineModule({ id: "core", title: "Core", description: "", contracts: ["Core"] });
 const dex = defineModule({
@@ -79,4 +79,10 @@ test("the shipped modules.config resolves", () => {
     integrations,
   );
   assert.equal(r.modules.length, modules.length);
+});
+
+test("missingEnv reports only required vars that are unset or blank", () => {
+  assert.deepEqual(missingEnv(pay, {}).map(v => v.key), ["PAY_TO"]);
+  assert.deepEqual(missingEnv(pay, { PAY_TO: "  " }).map(v => v.key), ["PAY_TO"]);
+  assert.deepEqual(missingEnv(pay, { PAY_TO: "0.0.1" }), []);
 });
