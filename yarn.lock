@@ -1533,22 +1533,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hiero-ledger/cryptography@npm:1.16.0-beta.3":
-  version: 1.16.0-beta.3
-  resolution: "@hiero-ledger/cryptography@npm:1.16.0-beta.3"
+"@hiero-ledger/cryptography@npm:1.19.0":
+  version: 1.19.0
+  resolution: "@hiero-ledger/cryptography@npm:1.19.0"
   dependencies:
     "@noble/curves": 1.8.1
     ansi-regex: 6.2.2
     ansi-styles: 6.2.3
     asn1js: 3.0.6
-    bignumber.js: 9.1.1
-    bn.js: 5.2.1
+    bignumber.js: 11.1.2
+    bn.js: 5.2.3
     buffer: 6.0.3
     crypto-js: 4.2.0
     debug: 4.4.1
     forge-light: 1.1.4
     js-base64: 3.7.7
-    react-native-get-random-values: 1.11.0
+    react-native-get-random-values: 2.0.0
     spark-md5: 3.0.2
     strip-ansi: 7.1.2
     tweetnacl: 1.0.3
@@ -1556,53 +1556,50 @@ __metadata:
   peerDependenciesMeta:
     expo-crypto:
       optional: true
-  checksum: 353edb593794668430c43e594ab9c8cdb94d121aee69eb34d9232d8aa0c566174af037672986ccae00682652f2909225f334119f087ef19b8a1b8f9b849a4a8c
+  checksum: edb77d050adfb44dd6477dc0bebf2f2aeeb356b3d7e11d00b2ba9a9f65dede67a3447d3628dfa0ffdd148facf38a99dc624e8f03412c17719d5bd93c17263caa
   languageName: node
   linkType: hard
 
-"@hiero-ledger/proto@npm:2.26.0-beta.3":
-  version: 2.26.0-beta.3
-  resolution: "@hiero-ledger/proto@npm:2.26.0-beta.3"
+"@hiero-ledger/proto@npm:2.31.0":
+  version: 2.31.0
+  resolution: "@hiero-ledger/proto@npm:2.31.0"
   dependencies:
     long: 5.3.1
   peerDependencies:
     ansi-regex: 6.2.2
     ansi-styles: 6.2.3
     debug: 4.4.1
-    protobufjs: 7.5.4
+    protobufjs: 8.0.1
     strip-ansi: 7.1.2
-  checksum: b363751be78594bca4a27c6615e34ed0a68c20e0804f620b15eb3738b264b322bdf855c3b0cde6812d3faa86d798cec5e59c160ffab98f26ac59a0fe4b876803
+  checksum: 308514d601fef6f2347a97c44805508728bc26f783a12ee037baa520e265b2c987b975849a26dae20e40080857656decffa14463dd106109d2cc69423e28fc37
   languageName: node
   linkType: hard
 
-"@hiero-ledger/sdk@npm:^2.80.0":
-  version: 2.80.0
-  resolution: "@hiero-ledger/sdk@npm:2.80.0"
+"@hiero-ledger/sdk@npm:2.85.0":
+  version: 2.85.0
+  resolution: "@hiero-ledger/sdk@npm:2.85.0"
   dependencies:
-    "@ethersproject/abi": 5.8.0
-    "@ethersproject/bignumber": 5.8.0
-    "@ethersproject/bytes": 5.8.0
-    "@ethersproject/rlp": 5.8.0
     "@grpc/grpc-js": 1.12.6
-    "@hiero-ledger/cryptography": 1.16.0-beta.3
-    "@hiero-ledger/proto": 2.26.0-beta.3
+    "@hiero-ledger/cryptography": 1.19.0
+    "@hiero-ledger/proto": 2.31.0
     ansi-regex: 6.2.2
     ansi-styles: 6.2.3
-    bignumber.js: 9.1.1
-    bn.js: 5.1.1
+    bignumber.js: 11.1.2
+    bn.js: 5.2.3
     crypto-js: 4.2.0
     debug: 4.4.1
+    ethers: 6.16.0
     js-base64: 3.7.4
     long: 5.3.1
     pino: 10.1.0
     pino-pretty: 13.0.0
-    protobufjs: 7.5.4
+    protobufjs: 8.2.0
     rfc4648: 1.5.3
     strip-ansi: 7.1.2
     utf8: 3.0.0
   peerDependencies:
-    bn.js: 5.2.1
-  checksum: 2a8debec892b0887062c9c717805209aa0ca84b4a3a72c5a6adb1cc9fc09ff89220c60558a20ebad07047e993356d11d4b1ec340d6c622ba1cb1aa3b31988df9
+    bn.js: 5.2.3
+  checksum: 9c1bc0a3c262c8e2d8a43b40c264f44b6bd56041d042e7e7f9e3c60e62d87d7f6fa575d364b737e20f07c39622c76453d78325ee0606c04b34c14e8064c83f2d
   languageName: node
   linkType: hard
 
@@ -3365,11 +3362,13 @@ __metadata:
     "@ethersproject/abi": ~5.7.0
     "@ethersproject/providers": ~5.7.2
     "@hashgraph/system-contracts-forking": 0.1.2
+    "@hiero-ledger/sdk": 2.85.0
     "@inquirer/password": ^4.0.2
     "@nomicfoundation/hardhat-chai-matchers": ~2.0.7
     "@nomicfoundation/hardhat-ethers": ~3.0.8
     "@nomicfoundation/hardhat-network-helpers": ~1.0.11
     "@openzeppelin/contracts": 5.6.1
+    "@sh/shared": 0.0.1
     "@typechain/ethers-v6": ~0.5.1
     "@typechain/hardhat": ~9.1.0
     "@types/eslint": ~9.6.1
@@ -3404,7 +3403,7 @@ __metadata:
   resolution: "@sh/nextjs@workspace:packages/nextjs"
   dependencies:
     "@heroicons/react": ^2.1.5
-    "@hiero-ledger/sdk": ^2.80.0
+    "@hiero-ledger/sdk": 2.85.0
     "@rainbow-me/rainbowkit": 2.2.9
     "@react-native-async-storage/async-storage": ^2.2.0
     "@scaffold-hbar-ui/components": ^2.0.0
@@ -6338,10 +6337,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bignumber.js@npm:9.1.1":
-  version: 9.1.1
-  resolution: "bignumber.js@npm:9.1.1"
-  checksum: ad243b7e2f9120b112d670bb3d674128f0bd2ca1745b0a6c9df0433bd2c0252c43e6315d944c2ac07b4c639e7496b425e46842773cf89c6a2dcd4f31e5c4b11e
+"bignumber.js@npm:11.1.2":
+  version: 11.1.2
+  resolution: "bignumber.js@npm:11.1.2"
+  checksum: cbe02fead055401fe7f0d6117671688397a76b2d2807aaf33f98e86927f861e0902cbcc716f7f9125009b1c524b5ebcf359427dba9511e959d76d366af90e2d6
   languageName: node
   linkType: hard
 
@@ -6373,17 +6372,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bn.js@npm:5.1.1":
-  version: 5.1.1
-  resolution: "bn.js@npm:5.1.1"
-  checksum: d50e3fd0d38dc16b7728feafdeaa3df409f40415ad20354a792a5144bb46cb4d14eff1c1a5283d129f7f8a468dc9a392a24ac66aa5d5b677e8aabfa090f08a68
-  languageName: node
-  linkType: hard
-
-"bn.js@npm:5.2.1":
-  version: 5.2.1
-  resolution: "bn.js@npm:5.2.1"
-  checksum: 3dd8c8d38055fedfa95c1d5fc3c99f8dd547b36287b37768db0abab3c239711f88ff58d18d155dd8ad902b0b0cee973747b7ae20ea12a09473272b0201c9edd3
+"bn.js@npm:5.2.3, bn.js@npm:^5.1.2, bn.js@npm:^5.2.0, bn.js@npm:^5.2.1":
+  version: 5.2.3
+  resolution: "bn.js@npm:5.2.3"
+  checksum: b024fa4ab260670ca0d99f3ffee96a09ba9662f3ae28e01f4d54072bca945724cca1fac53588892c87a909ef8bc91367c442cadc35568d55999adbc221a6f012
   languageName: node
   linkType: hard
 
@@ -6391,13 +6383,6 @@ __metadata:
   version: 4.12.3
   resolution: "bn.js@npm:4.12.3"
   checksum: 0fb6455c6d56e3869589ad736cc2f5ed2b6229daa1af43e93bd373eb5e20bf0ae25b166087189bce9ba3b3f4d971e1b9a12ec6027e52eb182e5535e1494cadbb
-  languageName: node
-  linkType: hard
-
-"bn.js@npm:^5.1.2, bn.js@npm:^5.2.0, bn.js@npm:^5.2.1":
-  version: 5.2.3
-  resolution: "bn.js@npm:5.2.3"
-  checksum: b024fa4ab260670ca0d99f3ffee96a09ba9662f3ae28e01f4d54072bca945724cca1fac53588892c87a909ef8bc91367c442cadc35568d55999adbc221a6f012
   languageName: node
   linkType: hard
 
@@ -8562,6 +8547,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ethers@npm:6.16.0, ethers@npm:^6.1.0, ethers@npm:^6.14.0":
+  version: 6.16.0
+  resolution: "ethers@npm:6.16.0"
+  dependencies:
+    "@adraffy/ens-normalize": 1.10.1
+    "@noble/curves": 1.2.0
+    "@noble/hashes": 1.3.2
+    "@types/node": 22.7.5
+    aes-js: 4.0.0-beta.5
+    tslib: 2.7.0
+    ws: 8.17.1
+  checksum: f96c54d35aa09d6700dbbe732db160d66f2a1acd59f2820e307869be478bb5c4c3fd0f34a5d51014cbea04200e6e9776290f521795492688c8d67052bf8a1e2a
+  languageName: node
+  linkType: hard
+
 "ethers@npm:^5.7.0":
   version: 5.8.0
   resolution: "ethers@npm:5.8.0"
@@ -8597,21 +8597,6 @@ __metadata:
     "@ethersproject/web": 5.8.0
     "@ethersproject/wordlists": 5.8.0
   checksum: fb107bf28dc3aedde4729f9553be066c699e0636346c095b4deeb5349a0c0c8538f48a58b5c8cbefced008706919739c5f7b8f4dd506bb471a31edee18cda228
-  languageName: node
-  linkType: hard
-
-"ethers@npm:^6.1.0, ethers@npm:^6.14.0":
-  version: 6.16.0
-  resolution: "ethers@npm:6.16.0"
-  dependencies:
-    "@adraffy/ens-normalize": 1.10.1
-    "@noble/curves": 1.2.0
-    "@noble/hashes": 1.3.2
-    "@types/node": 22.7.5
-    aes-js: 4.0.0-beta.5
-    tslib: 2.7.0
-    ws: 8.17.1
-  checksum: f96c54d35aa09d6700dbbe732db160d66f2a1acd59f2820e307869be478bb5c4c3fd0f34a5d51014cbea04200e6e9776290f521795492688c8d67052bf8a1e2a
   languageName: node
   linkType: hard
 
@@ -12531,7 +12516,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"protobufjs@npm:7.5.4, protobufjs@npm:^7.2.5":
+"protobufjs@npm:8.2.0":
+  version: 8.2.0
+  resolution: "protobufjs@npm:8.2.0"
+  dependencies:
+    "@types/node": ">=13.7.0"
+    long: ^5.0.0
+  checksum: be6f2e73b156701b87e42b1965071f820d10abce7e48815fc00af6e314d34a85eba5e56d754bb565251ad03ce135cc55994ef287c134c29e1e7099c6d055c5e7
+  languageName: node
+  linkType: hard
+
+"protobufjs@npm:^7.2.5":
   version: 7.5.4
   resolution: "protobufjs@npm:7.5.4"
   dependencies:
@@ -12726,14 +12721,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-get-random-values@npm:1.11.0":
-  version: 1.11.0
-  resolution: "react-native-get-random-values@npm:1.11.0"
+"react-native-get-random-values@npm:2.0.0":
+  version: 2.0.0
+  resolution: "react-native-get-random-values@npm:2.0.0"
   dependencies:
     fast-base64-decode: ^1.0.0
   peerDependencies:
-    react-native: ">=0.56"
-  checksum: 07729f70a007f7a3b8f98ebf687c1298ba288b87dd71d8ba385be6b5a377718b27b97547bbe1db6b225b83ee109dfce0b01721e6ed535d53892f3ac81e6bf975
+    react-native: ">=0.81"
+  checksum: 57e80fa836e61d5ff08d31cfb3df45c00a6616651b3f7521af2d4fd6456aefd05e17eb21a269d458ada0dd58bc8c25eef6b43097eefc542ab6186072f6b653a3
   languageName: node
   linkType: hard
 
