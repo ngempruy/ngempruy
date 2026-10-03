@@ -12,7 +12,6 @@ export const flashloan = defineModule({
     "packages/hardhat/contracts/modules/flashloan",
     "packages/hardhat/contracts/mocks/MockBonzoLendingPool.sol",
     "packages/hardhat/contracts/mocks/MockSaucerSwapPair.sol",
-    "packages/hardhat/contracts/mocks/MockSwapAdapter.sol",
     "packages/hardhat/deploy/40_flashloan.ts",
     "packages/hardhat/test/modules/BonzoFlashLoan.test.ts",
     "packages/hardhat/test/modules/SaucerSwapFlashLoan.test.ts",

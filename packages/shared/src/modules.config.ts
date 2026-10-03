@@ -1,5 +1,6 @@
 // Selected modules and integration recipes. `yarn configure` rewrites this file.
 import type { IntegrationRecipe, ModuleManifest } from "./define";
+import { dexRwa } from "./integrations/dex+rwa";
 import { rwaPayments } from "./integrations/rwa+payments";
 import { core } from "./modules/core";
 import { dex } from "./modules/dex";
@@ -8,4 +9,4 @@ import { payments } from "./modules/payments";
 import { rwa } from "./modules/rwa";
 
 export const modules: ModuleManifest[] = [core, rwa, dex, flashloan, payments];
-export const integrations: IntegrationRecipe[] = [rwaPayments];
+export const integrations: IntegrationRecipe[] = [dexRwa, rwaPayments];

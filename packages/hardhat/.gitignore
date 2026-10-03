@@ -21,8 +21,9 @@ artifacts-zk
 cache-zk
 
 # deployments
+# Not tracked: a scaffolded copy must deploy its own contracts (and own their roles).
+# deployedContracts.ts stays committed so the app shows the live demo deployment.
 deployments
-
 # typescript
 *.tsbuildinfo
 

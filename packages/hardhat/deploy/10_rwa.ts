@@ -28,6 +28,14 @@ const deployRwa: DeployFunction = async function (hre: HardhatRuntimeEnvironment
     await tx.wait();
     token = await rwa.token();
   }
+  const oracle = await hre.ethers.getContractAt(
+    "RwaNavOracle",
+    (await hre.deployments.get("RwaNavOracle")).address,
+    await hre.ethers.getSigner(deployer),
+  );
+  if ((await oracle.round()) === 0n) {
+    await (await oracle.postNav(hre.ethers.parseUnits("100", 18), "ipfs://initial-appraisal")).wait();
+  }
   const tokenId = TokenId.fromSolidityAddress(token).toString();
   writeHederaResources(chainId, { rwaTokenId: tokenId });
   console.log(`RWA token ${tokenId}: https://hashscan.io/${chainId === 295 ? "mainnet" : "testnet"}/token/${tokenId}`);
