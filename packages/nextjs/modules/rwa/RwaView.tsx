@@ -101,7 +101,9 @@ export const RwaView = () => {
           <button
             className="btn btn-sm btn-primary"
             onClick={() =>
-              transactor(() => writeContractAsync({ address: token, abi: hrc719Abi, functionName: "associate" }))
+              transactor(() =>
+                writeContractAsync({ address: token as Address, abi: hrc719Abi, functionName: "associate" }),
+              )
             }
           >
             Associate {tokenIdOf(token)}
