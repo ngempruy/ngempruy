@@ -62,3 +62,12 @@ export function resolveModules(
 export function missingEnv(item: { env: EnvVar[] }, env: Record<string, string | undefined>): EnvVar[] {
   return item.env.filter(v => v.required && !env[v.key]?.trim());
 }
+
+/** Required env vars missing for a module, including those of the modules it requires. */
+export function missingEnvFor(
+  id: string,
+  catalog: ModuleManifest[],
+  env: Record<string, string | undefined>,
+): EnvVar[] {
+  return missingEnv({ env: resolveModules([id], catalog).env }, env);
+}

@@ -12,7 +12,8 @@ export const core = defineModule({
     },
     {
       key: "HEDERA_OPERATOR_KEY",
-      description: "ECDSA private key (hex) of HEDERA_OPERATOR_ID. Never commit it.",
+      description:
+        "ECDSA private key (hex) of HEDERA_OPERATOR_ID; must be the audit topic's submit key (the deployer's key). Never commit it.",
       required: true,
     },
     {

@@ -1,6 +1,13 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { ENV_MARKER, prunePlan, renderEnvExample, renderModulesConfig, renderViewRegistry } from "../src/configure";
+import {
+  ENV_MARKER,
+  isSafeRepoPath,
+  prunePlan,
+  renderEnvExample,
+  renderModulesConfig,
+  renderViewRegistry,
+} from "../src/configure";
 import { defineIntegration, defineModule } from "../src/define";
 import { resolveModules } from "../src/resolve";
 
@@ -49,4 +56,30 @@ test("prune plan drops unselected modules and inactive recipes, keeps the rest",
   assert.deepEqual(plan.paths.sort(), ["a/pay", "a/r"]);
   assert.deepEqual(plan.scripts, ["x402:pay"]);
   assert.deepEqual(plan.dependencies, ["@x402/next"]);
+});
+
+test("prune plan never removes what a kept module also owns", () => {
+  const shared = defineModule({
+    id: "shared-owner",
+    title: "",
+    description: "",
+    paths: ["a/mock"],
+    dependencies: ["dep"],
+  });
+  const other = defineModule({
+    id: "other",
+    title: "",
+    description: "",
+    paths: ["a/mock", "a/other"],
+    dependencies: ["dep"],
+  });
+  const plan = prunePlan([core, shared, other], [], resolveModules(["shared-owner"], [core, shared, other]));
+  assert.deepEqual(plan.paths, ["a/other"]);
+  assert.deepEqual(plan.dependencies, []);
+});
+
+test("only relative paths inside the repo are safe to delete", () => {
+  assert.ok(isSafeRepoPath("packages/nextjs/modules/rwa"));
+  for (const bad of ["", ".", "..", "../outside", "a/../../b", "/etc", "C:\\x"])
+    assert.equal(isSafeRepoPath(bad), false, bad);
 });

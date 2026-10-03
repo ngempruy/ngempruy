@@ -1,4 +1,4 @@
-import { x402Config } from "~~/services/x402/config";
+import { x402Setup } from "~~/services/x402/config";
 import { DirectTransfer } from "./DirectTransfer";
 import { TryPaywall } from "./TryPaywall";
 
@@ -6,7 +6,8 @@ const ENDPOINT = "/api/x402/hbar-usd";
 
 /** x402 paywall settings (server env) plus the two ways to pay: agent (x402) and wallet (direct). */
 export const PaymentsView = () => {
-  const config = x402Config();
+  const { config, error } = x402Setup();
+  if (error) return <p className="alert alert-error m-0 text-sm">{error}</p>;
   if (!config) return null;
   const priceHbar = Number(config.priceTinybars) / 1e8;
 

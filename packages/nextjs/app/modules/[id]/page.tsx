@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { missingEnv, modules } from "@sh/shared";
+import { missingEnvFor, modules } from "@sh/shared";
 import { ModuleSetupHint } from "~~/components/ModuleSetupHint";
 import { moduleViews } from "~~/modules";
 
@@ -18,7 +18,7 @@ export default async function ModulePage({ params }: Props) {
   const mod = modules.find(m => m.id === id);
   if (!mod) notFound();
 
-  const missing = missingEnv(mod, process.env);
+  const missing = missingEnvFor(mod.id, modules, process.env);
   const View = moduleViews[mod.id];
 
   return (

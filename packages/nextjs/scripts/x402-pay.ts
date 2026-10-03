@@ -25,10 +25,12 @@ async function main() {
   });
   const client = x402Client.fromConfig({
     schemes: [{ network: "hedera:*", client: new ExactHederaScheme(signer) }],
-    // Agent guardrail: pay in HBAR only, never more than MAX_TINYBARS per request.
+    // Agent guardrail: pay in HBAR only, never more than MAX_TINYBARS per request. The policy is
+    // needed too: the scheme's default asset (USDC) bypasses allowedAssets, capped only at $1.
     spendControls: {
       allowedAssets: [{ network: "hedera:testnet", asset: "0.0.0", maxAmountPerPayment: MAX_TINYBARS }],
     },
+    policies: [(_version, requirements) => requirements.filter(r => r.asset === "0.0.0")],
   });
   const fetchWithPayment = wrapFetchWithPayment(fetch, client);
 

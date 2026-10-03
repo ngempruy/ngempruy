@@ -13,6 +13,7 @@ import {
   type ModuleManifest,
   ResolveError,
   modules as currentModules,
+  isSafeRepoPath,
   prunePlan,
   renderEnvExample,
   renderModulesConfig,
@@ -75,6 +76,8 @@ async function main() {
   console.log(`              dependencies: ${plan.dependencies.join(", ") || "none"}`);
   if (process.argv.includes("--dry-run")) return;
 
+  const unsafe = plan.paths.filter(p => !isSafeRepoPath(p));
+  if (unsafe.length) throw new Error(`Refusing to delete paths outside the repo: ${unsafe.join(", ")}`);
   for (const p of plan.paths) fs.rmSync(path.join(ROOT, p), { recursive: true, force: true });
   prunePackageJsons(plan.scripts, plan.dependencies);
   fs.writeFileSync(path.join(SHARED_SRC, "modules.config.ts"), renderModulesConfig(resolution));
