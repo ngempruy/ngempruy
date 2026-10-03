@@ -1,0 +1,40 @@
+{
+  "name": "hedera-defi-kit-static",
+  "description": "Template invariants: gate files, hardhat-only manifest, no committed secrets, module system in place.",
+  "jsonAssertions": [
+    { "file": "template.json", "path": "create-scaffold-hbar.defaults.solidityFramework", "equals": "hardhat" },
+    { "file": "template.json", "path": "create-scaffold-hbar.defaults.frontend", "equals": "nextjs-app" },
+    { "file": "package.json", "path": "engines.node", "equals": ">=20.18.3" }
+  ],
+  "fileAssertions": {
+    "required": [
+      "README.md",
+      "AGENTS.md",
+      "LICENCE",
+      "template.json",
+      "packages/shared/src/modules.config.ts",
+      "packages/shared/src/modules/core.ts",
+      "packages/shared/scripts/configure.ts",
+      "packages/nextjs/modules/index.tsx",
+      "packages/nextjs/app/modules/[id]/page.tsx",
+      "packages/nextjs/app/api/audit/route.ts",
+      "packages/hardhat/deploy/00_core_audit_topic.ts",
+      "packages/nextjs/contracts/hederaResources.json"
+    ],
+    "forbidden": [
+      ".env",
+      "packages/nextjs/.env",
+      "packages/nextjs/.env.local",
+      "packages/hardhat/.env",
+      "packages/foundry"
+    ]
+  },
+  "textAssertions": [
+    { "file": "README.md", "contains": ["yarn configure", "hashscan.io/testnet", "Unaudited"] },
+    { "file": "AGENTS.md", "contains": ["Modules never import each other", "The manifest is the source of truth"] },
+    {
+      "file": "packages/shared/src/modules.config.ts",
+      "contains": ["export const modules", "export const integrations"]
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "name": "hedera-defi-kit-yarn",
+  "description": "Commands that must pass after every attempt.",
+  "requiresNoSecrets": true,
+  "forbiddenCommands": ["npm install", "npm run", "pnpm install", "pnpm run"],
+  "commands": [
+    { "name": "install", "command": "yarn install", "timeoutMs": 300000, "purpose": "Install workspace dependencies." },
+    { "name": "format", "command": "yarn format:check", "timeoutMs": 120000, "purpose": "Shared Prettier config." },
+    {
+      "name": "lint",
+      "command": "yarn lint",
+      "timeoutMs": 240000,
+      "purpose": "ESLint for app and contracts, types for shared."
+    },
+    {
+      "name": "shared-test",
+      "command": "yarn shared:test",
+      "timeoutMs": 120000,
+      "purpose": "Resolver, configure and audit format."
+    },
+    {
+      "name": "hardhat-test",
+      "command": "yarn hardhat:test",
+      "timeoutMs": 600000,
+      "purpose": "Contract tests on a testnet fork."
+    },
+    {
+      "name": "build",
+      "command": "yarn next:build",
+      "timeoutMs": 400000,
+      "purpose": "Production build with type checks."
+    }
+  ]
+}

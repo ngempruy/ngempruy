@@ -1,0 +1,45 @@
+schemaVersion: 2
+
+name: hedera-defi-kit
+description: >
+  Modular, provider-agnostic DeFi kit for Hedera. Core (HCS audit log), RWA
+  (HTS token with a contract-held KYC key + NAV oracle) and Payments (x402 via
+  a hosted facilitator) are delivered; the PRD below is the next module, built
+  the way AGENTS.md describes so `yarn configure` can still prune it.
+
+agent: claude
+
+baseline:
+  commands:
+    - name: install
+      command: yarn install
+    - name: build
+      command: yarn next:build
+
+# Only the increment about to run. 01–03 document what is already delivered on
+# this branch; a prd list delivers every entry, so they stay on disk only.
+prd:
+  - .harness/prds/04-staking.md
+
+validators:
+  static: .harness/validators/static.json
+  commands: .harness/validators/yarn.json
+  playwright: .harness/validators/playwright-smoke.yaml
+
+contract: .harness/acceptance-contract.json
+validator:
+  enabled: true
+
+chainValidation:
+  enabled: true
+  network: testnet
+  operator:
+    accountIdEnv: HEDERA_OPERATOR_ID
+    privateKeyEnv: HEDERA_OPERATOR_KEY
+  fundingHbar: 30
+  sweepBack: true
+  expose:
+    # The deploy wrapper and `yarn demo` accept a plain key in CI, so the funded
+    # signer signs the RWA flow (associate → KYC → issue → NAV) directly.
+    envVars:
+      - DEPLOYER_PRIVATE_KEY

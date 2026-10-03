@@ -23,3 +23,11 @@ node_modules
 dist
 
 .env
+
+# hedera-harness runtime
+.harness/runs/
+.harness/runtime/
+.harness/cache/
+.harness/skills/
+.harness-skills/
+.harness-context/
