@@ -10,6 +10,7 @@
     ]
   },
   "scripts": {
+    "configure": "yarn workspace @sh/shared configure",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "hardhat:account": "yarn workspace @sh/hardhat account",
