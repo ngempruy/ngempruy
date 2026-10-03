@@ -22,6 +22,8 @@ export type ModuleManifest = {
   paths: string[];
   /** package.json script names owned by this module (root and workspaces). */
   scripts: string[];
+  /** npm packages only this module uses; removed from every package.json when unselected. */
+  dependencies: string[];
 };
 
 export type IntegrationRecipe = {
@@ -34,6 +36,7 @@ export type IntegrationRecipe = {
   env: EnvVar[];
   paths: string[];
   scripts: string[];
+  dependencies: string[];
 };
 
 export function defineModule(m: Partial<ModuleManifest> & Pick<ModuleManifest, "id" | "title" | "description">) {
@@ -45,6 +48,7 @@ export function defineModule(m: Partial<ModuleManifest> & Pick<ModuleManifest, "
     env: [],
     paths: [],
     scripts: [],
+    dependencies: [],
     ...m,
   } satisfies ModuleManifest;
 }
@@ -52,5 +56,5 @@ export function defineModule(m: Partial<ModuleManifest> & Pick<ModuleManifest, "
 export function defineIntegration(
   r: Partial<IntegrationRecipe> & Pick<IntegrationRecipe, "id" | "title" | "description" | "when">,
 ) {
-  return { contracts: [], env: [], paths: [], scripts: [], ...r } satisfies IntegrationRecipe;
+  return { contracts: [], env: [], paths: [], scripts: [], dependencies: [], ...r } satisfies IntegrationRecipe;
 }

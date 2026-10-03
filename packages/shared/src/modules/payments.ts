@@ -14,6 +14,7 @@ export const payments = defineModule({
     "packages/nextjs/modules/payments",
   ],
   scripts: ["x402:pay"],
+  dependencies: ["@x402/core", "@x402/fetch", "@x402/hedera", "@x402/next"],
   env: [
     { key: "X402_PAY_TO", description: "Hedera account id (0.0.x) that receives x402 payments", required: true },
     {

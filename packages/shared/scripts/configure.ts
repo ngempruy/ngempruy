@@ -44,15 +44,20 @@ async function pickModules(catalog: ModuleManifest[]): Promise<string[]> {
   });
 }
 
-function removeScripts(names: string[]) {
-  if (names.length === 0) return;
+/** Drops the given scripts and dependencies from the root and workspace package.json files. */
+function prunePackageJsons(scripts: string[], dependencies: string[]) {
+  if (scripts.length + dependencies.length === 0) return;
   const pkgs = [
     path.join(ROOT, "package.json"),
     ...["shared", "hardhat", "nextjs"].map(p => path.join(ROOT, "packages", p, "package.json")),
   ];
   for (const file of pkgs.filter(f => fs.existsSync(f))) {
     const pkg = JSON.parse(fs.readFileSync(file, "utf8"));
-    for (const name of names) delete pkg.scripts?.[name];
+    for (const name of scripts) delete pkg.scripts?.[name];
+    for (const name of dependencies) {
+      delete pkg.dependencies?.[name];
+      delete pkg.devDependencies?.[name];
+    }
     fs.writeFileSync(file, `${JSON.stringify(pkg, null, 2)}\n`);
   }
 }
@@ -67,15 +72,16 @@ async function main() {
   console.log(`Recipes:      ${resolution.integrations.map(r => r.id).join(", ") || "none"}`);
   console.log(`Deploy order: ${resolution.deployOrder.join(" → ") || "no contracts"}`);
   console.log(`Removes:      ${plan.paths.length} paths, scripts: ${plan.scripts.join(", ") || "none"}`);
+  console.log(`              dependencies: ${plan.dependencies.join(", ") || "none"}`);
   if (process.argv.includes("--dry-run")) return;
 
   for (const p of plan.paths) fs.rmSync(path.join(ROOT, p), { recursive: true, force: true });
-  removeScripts(plan.scripts);
+  prunePackageJsons(plan.scripts, plan.dependencies);
   fs.writeFileSync(path.join(SHARED_SRC, "modules.config.ts"), renderModulesConfig(resolution));
   const withViews = resolution.modules.map(m => m.id).filter(id => fs.existsSync(path.join(VIEWS_DIR, id, "index.ts")));
   fs.writeFileSync(path.join(VIEWS_DIR, "index.tsx"), renderViewRegistry(withViews));
   fs.writeFileSync(ENV_EXAMPLE, renderEnvExample(fs.readFileSync(ENV_EXAMPLE, "utf8"), resolution.env));
-  console.log("Done. Review with `git status`, then run `yarn format && yarn lint && yarn hardhat:test`.");
+  console.log("Done. Review with `git status`, then run `yarn install && yarn lint && yarn hardhat:test`.");
 }
 
 main().catch(e => {

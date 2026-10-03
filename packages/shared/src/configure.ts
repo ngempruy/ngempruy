@@ -47,9 +47,13 @@ export function renderEnvExample(current: string, vars: EnvVar[]): string {
   return `${head}${ENV_MARKER}\n${body}\n`;
 }
 
-/** Paths and package scripts owned by modules and recipes that the resolution does not keep. */
+/** Paths, package scripts and npm dependencies owned by modules and recipes that the resolution does not keep. */
 export function prunePlan(catalog: ModuleManifest[], recipes: IntegrationRecipe[], resolution: Resolution) {
   const kept = new Set<object>([...resolution.modules, ...resolution.integrations]);
   const dropped = [...catalog, ...recipes].filter(item => !kept.has(item));
-  return { paths: dropped.flatMap(d => d.paths), scripts: dropped.flatMap(d => d.scripts) };
+  return {
+    paths: dropped.flatMap(d => d.paths),
+    scripts: dropped.flatMap(d => d.scripts),
+    dependencies: dropped.flatMap(d => d.dependencies),
+  };
 }

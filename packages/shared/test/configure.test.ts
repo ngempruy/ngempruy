@@ -13,6 +13,7 @@ const pay = defineModule({
   requires: ["core"],
   paths: ["a/pay"],
   scripts: ["x402:pay"],
+  dependencies: ["@x402/next"],
   env: [{ key: "PAY_TO", description: "Receiver", required: true }],
 });
 const recipe = defineIntegration({
@@ -47,4 +48,5 @@ test("prune plan drops unselected modules and inactive recipes, keeps the rest",
   const plan = prunePlan(catalog, [recipe], resolveModules(["rwa"], catalog, [recipe]));
   assert.deepEqual(plan.paths.sort(), ["a/pay", "a/r"]);
   assert.deepEqual(plan.scripts, ["x402:pay"]);
+  assert.deepEqual(plan.dependencies, ["@x402/next"]);
 });
