@@ -52,4 +52,22 @@ interface IHederaTokenService {
         int64 amount,
         bytes[] memory metadata
     ) external returns (int64 responseCode, int64 newTotalSupply, int64[] memory serialNumbers);
+
+    /// Transfers `amount` of a fungible token. Sender must sign or be the calling contract.
+    function transferToken(
+        address token,
+        address sender,
+        address recipient,
+        int64 amount
+    ) external returns (int64 responseCode);
+
+    /// Grants KYC for `account` on `token`. The caller must hold the token's KYC key.
+    function grantTokenKyc(address token, address account) external returns (int64 responseCode);
+
+    /// Revokes KYC for `account` on `token`. The caller must hold the token's KYC key.
+    function revokeTokenKyc(address token, address account) external returns (int64 responseCode);
+
+    /// @return responseCode SUCCESS is 22.
+    /// @return kycGranted Whether `account` has KYC on `token`.
+    function isKyc(address token, address account) external returns (int64 responseCode, bool kycGranted);
 }
