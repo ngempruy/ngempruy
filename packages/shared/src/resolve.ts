@@ -23,7 +23,7 @@ export function resolveModules(
   const visit = (id: string, path: string[]) => {
     const m = byId.get(id);
     if (!m) {
-      const via = path.length ? ` (required by ${path.at(-1)})` : "";
+      const via = path.length ? ` (required by ${path[path.length - 1]})` : "";
       throw new ResolveError(`Unknown module "${id}"${via}`);
     }
     if (state.get(id) === "done") return;

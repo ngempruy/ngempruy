@@ -82,7 +82,13 @@ test("the shipped modules.config resolves", () => {
 });
 
 test("missingEnv reports only required vars that are unset or blank", () => {
-  assert.deepEqual(missingEnv(pay, {}).map(v => v.key), ["PAY_TO"]);
-  assert.deepEqual(missingEnv(pay, { PAY_TO: "  " }).map(v => v.key), ["PAY_TO"]);
+  assert.deepEqual(
+    missingEnv(pay, {}).map(v => v.key),
+    ["PAY_TO"],
+  );
+  assert.deepEqual(
+    missingEnv(pay, { PAY_TO: "  " }).map(v => v.key),
+    ["PAY_TO"],
+  );
   assert.deepEqual(missingEnv(pay, { PAY_TO: "0.0.1" }), []);
 });
