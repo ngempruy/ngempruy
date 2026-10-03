@@ -11,6 +11,6 @@ export const moduleViews: Record<string, ComponentType<{ ready: boolean }>> = {
   core: coreView,
   rwa: rwaView,
   dex: dexView,
-  payments: paymentsView,
   flashloan: flashloanView,
+  payments: paymentsView,
 };
