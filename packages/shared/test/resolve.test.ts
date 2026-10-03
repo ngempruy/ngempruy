@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { defineIntegration, defineModule } from "../src/define";
+import { integrations, modules } from "../src/modules.config";
 import { resolveModules } from "../src/resolve";
 
 const core = defineModule({ id: "core", title: "Core", description: "", contracts: ["Core"] });
@@ -71,3 +72,11 @@ test("rejects two modules providing the same capability", () => {
   assert.throws(() => resolveModules(["dex", "dex2"], [...catalog, dex2]), /"dex" and "dex2" both provide "swap"/);
 });
 
+test("the shipped modules.config resolves", () => {
+  const r = resolveModules(
+    modules.map(m => m.id),
+    modules,
+    integrations,
+  );
+  assert.equal(r.modules.length, modules.length);
+});
