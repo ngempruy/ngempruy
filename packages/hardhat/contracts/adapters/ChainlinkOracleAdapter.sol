@@ -42,7 +42,11 @@ contract ChainlinkOracleAdapter is IPriceOracle, Ownable {
         int256 answer;
         (, answer, , updatedAt, ) = feed.aggregator.latestRoundData();
         if (answer <= 0) revert InvalidPrice(asset);
-        if (block.timestamp - updatedAt > feed.maxAge) revert StalePrice(asset, updatedAt);
+        // Feed clocks can run a little ahead of Hedera block time (rounded to the record file), e.g. when
+        // Pyth is updated and read in the same transaction. Treat a future timestamp as fresh.
+        if (updatedAt < block.timestamp && block.timestamp - updatedAt > feed.maxAge) {
+            revert StalePrice(asset, updatedAt);
+        }
 
         price = PriceScale.toWad(uint256(answer), feed.aggregator.decimals());
     }

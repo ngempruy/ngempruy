@@ -38,6 +38,13 @@ describe("Oracle adapters", function () {
         .withArgs(ASSET, updatedAt);
     });
 
+    it("treats an answer timestamped slightly in the future as fresh", async function () {
+      const { adapter, feed } = await deployFixture();
+      const ahead = (await time.latest()) + 10;
+      await feed.setRound(100_000_000n, ahead);
+      expect(await adapter.getPrice(ASSET)).to.deep.equal([ethers.parseUnits("1", 18), BigInt(ahead)]);
+    });
+
     it("reverts on zero or negative answers", async function () {
       const { adapter, feed } = await deployFixture();
       for (const answer of [0n, -1n]) {
@@ -87,6 +94,13 @@ describe("Oracle adapters", function () {
       await expect(adapter.getPrice(ASSET))
         .to.be.revertedWithCustomError(adapter, "StalePrice")
         .withArgs(ASSET, publishTime);
+    });
+
+    it("treats a publish time slightly in the future as fresh", async function () {
+      const { adapter, pyth } = await deployFixture();
+      const ahead = (await time.latest()) + 10;
+      await pyth.setPrice(PRICE_ID, 100_000_000n, -8, ahead);
+      expect(await adapter.getPrice(ASSET)).to.deep.equal([ethers.parseUnits("1", 18), BigInt(ahead)]);
     });
 
     it("reverts on non-positive prices and positive exponents", async function () {
