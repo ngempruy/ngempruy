@@ -1,0 +1,37 @@
+{
+  "name": "hedera-defi-kit",
+  "description": "Modular, provider-agnostic DeFi kit for Hedera: RWA (HTS + KYC + NAV oracle), SaucerSwap DEX, x402 payments and an HCS audit log, composable through integration recipes.",
+  "version": "0.1.0",
+  "create-scaffold-hbar": {
+    "requirements": { "node": ">=20.18.3" },
+    "capabilities": {
+      "frontend": ["nextjs-app"],
+      "solidityFramework": ["hardhat"],
+      "packageManager": ["yarn", "npm"]
+    },
+    "defaults": {
+      "frontend": "nextjs-app",
+      "solidityFramework": "hardhat",
+      "packageManager": "yarn"
+    },
+    "outro": {
+      "sections": [
+        {
+          "title": "Run it",
+          "steps": [
+            { "label": "Start the frontend (works without a wallet or .env)", "command": "{run:next:dev}" }
+          ]
+        },
+        {
+          "title": "Go on-chain (Hedera testnet)",
+          "steps": [
+            { "label": "Generate an ECDSA deployer account", "command": "{run:framework:account:generate}" },
+            { "label": "Fund it with testnet HBAR", "url": "https://portal.hedera.com/faucet" },
+            { "label": "Deploy the selected modules", "command": "{run:framework:deploy} --network hederaTestnet" },
+            { "text": "See README.md for module selection, env vars and the testnet demo." }
+          ]
+        }
+      ]
+    }
+  }
+}
