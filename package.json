@@ -43,7 +43,8 @@
     "precommit": "lint-staged",
     "shared:check-types": "yarn workspace @sh/shared check-types",
     "shared:test": "yarn workspace @sh/shared test",
-    "x402:pay": "yarn workspace @sh/nextjs x402:pay"
+    "x402:pay": "yarn workspace @sh/nextjs x402:pay",
+    "hardhat:dex:swap": "yarn workspace @sh/hardhat dex:swap"
   },
   "packageManager": "yarn@3.2.3",
   "devDependencies": {
