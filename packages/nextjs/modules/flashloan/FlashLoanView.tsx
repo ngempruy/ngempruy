@@ -122,7 +122,7 @@ export const FlashLoanView = () => {
               {owner && (
                 <>
                   {" "}
-                  (<ContractLink address={owner}>{`${owner.slice(0, 6)}…${owner.slice(-4)}`}</ContractLink>)
+                  (<ContractLink address={owner as Address}>{`${owner.slice(0, 6)}…${owner.slice(-4)}`}</ContractLink>)
                 </>
               )}
               . Deploy your own with <code>yarn hardhat:deploy --tags flashloan</code>.
