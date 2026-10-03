@@ -21,6 +21,20 @@ baseline:
 prd:
   - .harness/prds/04-staking.md
 
+# The defaults also forbid packages/hardhat/.env, but `yarn hardhat:account:generate` writes the
+# encrypted deployer key there and the README's setup creates packages/nextjs/.env.local. Both are
+# gitignored, so a developer who followed the README can still run `yarn harness:validate`.
+forbiddenFiles:
+  - .env
+  - packages/nextjs/.env
+secretScan:
+  failOnFiles:
+    - .env
+    - packages/nextjs/.env
+  patterns:
+    - name: private-key-assignment
+      pattern: "(PRIVATE_KEY|OPERATOR_KEY|HEDERA_OPERATOR_PRIVATE_KEY)\\s*=\\s*(0x)?[0-9a-fA-F]{32,}"
+
 validators:
   static: .harness/validators/static.json
   commands: .harness/validators/yarn.json
