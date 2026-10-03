@@ -41,3 +41,17 @@ export function hashscanUrl(
 ) {
   return `https://hashscan.io/${HASHSCAN_NETWORK[chainId] ?? "testnet"}/${kind}/${id}`;
 }
+
+/**
+ * The audit entry for one event emitted by a kit contract. Shared by the web app (/api/audit)
+ * and the scripts so both write the same shape for the same on-chain fact.
+ */
+export function auditEntryFromEvent(
+  module: string,
+  contract: string,
+  event: { name: string; args: Record<string, unknown> },
+  txHash: string,
+): AuditEntry {
+  const data = Object.fromEntries(Object.entries(event.args).map(([k, v]) => [k, String(v)]));
+  return { module, action: `${contract}.${event.name}`, ref: txHash, data };
+}

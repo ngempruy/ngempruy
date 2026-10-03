@@ -1,5 +1,5 @@
 import { type Abi, type Hex, decodeEventLog } from "viem";
-import { type AuditEntry, integrations, modules } from "@sh/shared";
+import { type AuditEntry, auditEntryFromEvent, integrations, modules } from "@sh/shared";
 import deployedContracts from "~~/contracts/deployedContracts";
 
 const MIRROR = "https://testnet.mirrornode.hedera.com";
@@ -48,10 +48,8 @@ export async function auditEntriesFromTx(txHash: string): Promise<AuditEntry[]> 
     if (!contract) return [];
     try {
       const { eventName, args } = decodeEventLog({ abi: contract.abi, data: log.data, topics: log.topics as [Hex] });
-      const data = Object.fromEntries(
-        Object.entries((args ?? {}) as Record<string, unknown>).map(([k, v]) => [k, String(v)]),
-      );
-      return [{ module: contract.module, action: `${contract.name}.${eventName}`, ref: txHash, data }];
+      const event = { name: eventName ?? "", args: (args ?? {}) as Record<string, unknown> };
+      return [auditEntryFromEvent(contract.module, contract.name, event, txHash)];
     } catch {
       return []; // not an event in the contract's ABI (e.g. an HTS log)
     }

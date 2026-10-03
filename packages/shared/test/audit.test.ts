@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { decodeAuditMessage, encodeAuditEntry } from "../src/audit";
+import { auditEntryFromEvent, decodeAuditMessage, encodeAuditEntry } from "../src/audit";
 
 const now = new Date("2026-10-03T00:00:00Z");
 
@@ -31,4 +31,16 @@ test("rejects entries without module or action", () => {
 test("ignores foreign or malformed topic messages", () => {
   assert.equal(decodeAuditMessage(Buffer.from("hello").toString("base64")), null);
   assert.equal(decodeAuditMessage(Buffer.from('{"module":"x"}').toString("base64")), null);
+});
+
+test("auditEntryFromEvent names the action contract.event and stringifies args", () => {
+  assert.deepEqual(
+    auditEntryFromEvent("rwa", "RwaToken", { name: "Issued", args: { to: "0xabc", amount: 5n } }, "0x1"),
+    {
+      module: "rwa",
+      action: "RwaToken.Issued",
+      ref: "0x1",
+      data: { to: "0xabc", amount: "5" },
+    },
+  );
 });
