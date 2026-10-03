@@ -1,138 +1,75 @@
 # Agent instructions
 
-Briefing for coding agents in this app (Cursor, Claude Code, Codex). Claude Code loads it through `CLAUDE.md`.
+Briefing for coding agents (Claude Code, Cursor, Codex) working in a Hedera DeFi Kit project. Read `README.md` for the product view; this file is the working contract.
 
-This is a Scaffold-HBAR dApp: Next.js App Router, wallet connect, Debug Contracts, and Hedera networks (testnet, mainnet, local fork). The CLI may have left only Hardhat or only Foundry.
-
-Use the package manager this project was created with (`packageManager` in the root `package.json`, or the lockfile). Examples use `yarn`; if the app was created with npm, swap `yarn <script>` for `npm run <script>`.
-
-## Which Solidity package
-
-- `packages/hardhat` exists → Hardhat (`hardhat-deploy`)
-- `packages/foundry` exists → Foundry (Forge scripts)
-- `packages/nextjs` is always the frontend (App Router, RainbowKit, Wagmi, Viem, DaisyUI)
-
-Follow only the flavor that is present.
+The project was created with Yarn or npm (see `packageManager` / the lockfile). Examples use `yarn <script>`; with npm use `npm run <script>`.
 
 ## Commands
 
-Package-prefixed scripts for package-specific work. Keep only truly cross-workspace commands unprefixed.
-
 ```bash
-# Local chain + deploy + frontend (separate terminals)
-yarn hardhat:chain    # Hedera-forked Hardhat node on 8545
-yarn hardhat:deploy --network localhost
-yarn foundry:chain    # Anvil from the Foundry package
-yarn foundry:deploy
-yarn next:start       # http://localhost:3000
-
-# Frontend only
-yarn next:dev
-
-# Quality / build
-yarn lint
-yarn format
+yarn start                                   # app on :3000, needs no wallet or .env
+yarn configure --modules rwa,payments        # pick modules (prunes the rest; commit first)
+yarn hardhat:test                            # contracts (testnet fork + MockHts for KYC)
+yarn shared:test                             # resolver, configure, audit format
+yarn lint && yarn format:check && yarn next:check-types
 yarn next:build
-yarn hardhat:compile
-yarn foundry:compile
 
-# Live networks
-yarn hardhat:deploy --network hederaTestnet   # or hederaMainnet
-yarn foundry:deploy --network hedera_testnet  # or hedera_mainnet
-yarn hardhat:verify -- HederaToken testnet [0xAddress]
-yarn foundry:verify:testnet
-
-# Deployer account
-yarn hardhat:account:generate
-yarn hardhat:account:import
-yarn hardhat:account
+yarn hardhat:account:generate                # ECDSA deployer, encrypted in packages/hardhat/.env
+yarn hardhat:deploy --network hederaTestnet  # audit topic + selected modules
+yarn demo                                    # every module's testnet flow, prints HashScan links
+yarn x402:pay [url]                          # agent pays an x402 endpoint (payments module)
 ```
 
-`yarn hardhat:deploy` without `--network localhost` targets the in-process `hardhat` network, not the long-running fork.
+Non-interactive deploys and demos: export `DEPLOYER_PRIVATE_KEY` (plain hex) instead of using the encrypted keystore. Never write a key into a tracked file.
 
-## Layout
+## Map
 
-### Hardhat
+| Path                                             | Owns                                                                                                        |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| `packages/shared/src/modules/<id>.ts`            | Module manifest: `requires`, `consumes`, `provides`, `contracts`, `env`, `paths`, `scripts`, `dependencies` |
+| `packages/shared/src/integrations/<a>+<b>.ts`    | Recipe for a module pair, active only when all `when` modules are selected                                  |
+| `packages/shared/src/modules.config.ts`          | The selection. **Generated** by `yarn configure`                                                            |
+| `packages/hardhat/contracts/core/`               | Shared interfaces (`IPriceOracle`, `ISwapAdapter`)                                                          |
+| `packages/hardhat/contracts/adapters/`           | Provider implementations behind those interfaces                                                            |
+| `packages/hardhat/contracts/modules/<id>/`       | Module contracts                                                                                            |
+| `packages/hardhat/deploy/NN_<id>.ts`             | Deploy step per module (`00` core, `10` rwa, …)                                                             |
+| `packages/hardhat/scripts/demo/<id>.ts`          | Demo step per module, run by `yarn demo`                                                                    |
+| `packages/nextjs/modules/<id>/index.ts`          | Default-exported page view, receives `{ ready }`                                                            |
+| `packages/nextjs/modules/index.tsx`              | View registry. **Generated**                                                                                |
+| `packages/nextjs/contracts/deployedContracts.ts` | ABIs + addresses. **Generated** by deploy                                                                   |
+| `packages/nextjs/contracts/hederaResources.json` | Topic and token ids per chain. **Written** by deploy                                                        |
+| `packages/nextjs/app/api/audit/route.ts`         | Confirmed kit tx → HCS audit entries                                                                        |
 
-- Contracts: `packages/hardhat/contracts/`
-- Deploy scripts: `packages/hardhat/deploy/`
-- Tests: `packages/hardhat/test/`
-- Config: `packages/hardhat/hardhat.config.ts`
-- Tagged deploy: if `deployHederaToken.tags = ["HederaToken"]`, run `yarn hardhat:deploy --tags HederaToken`
+## Invariants
 
-### Foundry
+1. **Modules never import each other.** Cross-module behaviour goes through `contracts/core` interfaces or a recipe in `integrations/`. A module that `consumes` another must work when it is absent.
+2. **The manifest is the source of truth.** Adding a contract, env var, file, script or npm dependency to a module means adding it to the manifest's `contracts` / `env` / `paths` / `scripts` / `dependencies`. Otherwise `configure` leaves dead files behind or breaks the build. CI runs every single-module configuration to catch this.
+3. **Do not hand-edit generated files.** Run `yarn configure --modules <current selection>` after manifest changes.
+4. **Every kit contract event is an audit entry.** Name events for what happened (`KycGranted`, `NavPosted`). `/api/audit` and `yarn demo` log them through `auditEntryFromEvent`; do not post free-form HCS messages from modules.
+5. **No secrets in the client.** Only `NEXT_PUBLIC_*` reaches the browser. Operator keys stay server-side (`services/hedera/operator.ts`).
+6. **Errors carry the cause.** Contracts revert with custom errors (e.g. `HtsCallFailed(selector, code)`), not bare `require` strings. HTS response codes are surfaced, never swallowed.
 
-- Contracts: `packages/foundry/contracts/`
-- Deploy scripts: `packages/foundry/script/` (`Deploy.s.sol`, `DeployHederaToken.s.sol`, `DeployHtsTokenCreator.s.sol`)
-- Tests: `packages/foundry/test/`
-- Config: `packages/foundry/foundry.toml`
-- One contract: `yarn foundry:deploy --file DeployHederaToken.s.sol`
+## Hedera rules to respect
 
-### After deploy
+- HTS tokens must be **associated** before an account or contract can receive them; users associate via HIP-719 (`associate()` on the token address).
+- **KYC requires association first** (code `184` otherwise). Contracts that hold a KYC-gated token (pairs, routers, pools) also need association **and** KYC.
+- EVM accounts and Hardhat use **ECDSA** keys. JSON-RPC `value` is in **weibars** (10¹⁸ per HBAR); the SDK and x402 use **tinybars** (10⁸).
+- System contracts: HTS `0x167`, exchange rate `0x168`, schedule service `0x16b` (HIP-1215).
+- Do not use atomic batch transactions for contract calls (at most one, last; removed in 2027). Hooks (HIP-1195) are not live.
+- x402 on Hedera is a native transfer signed by the client and submitted by the facilitator (fee payer). The client signs only.
+- Testnet USDC: SaucerSwap/Bonzo pools use `0.0.5449`; Circle's faucet token is `0.0.429274` (no SaucerSwap pool).
 
-ABIs and addresses are written to `packages/nextjs/contracts/deployedContracts.ts`. Put third-party contracts in `packages/nextjs/contracts/externalContracts.ts`.
+Official Hedera agent skills that match this codebase: `hedera-token-service`, `hts-system-contract`, `hss-system-contract`, `hedera-consensus-service` (install with `npx skills add hedera-dev/hedera-skills`).
 
-Sample contracts on this starter: `HederaToken` (ERC-20) and `HtsTokenCreator` (HTS precompile at `0x167`).
+## Frontend
 
-## Frontend contract interaction
+Hooks live in `packages/nextjs/hooks/scaffold-hbar`; use the names that exist: `useScaffoldReadContract`, `useScaffoldWriteContract`, `useScaffoldEventHistory`, `useDeployedContractInfo`, `useTransactor`. After a kit transaction, call `recordAudit(hash)` from `~~/utils/recordAudit`.
 
-Hooks live in `packages/nextjs/hooks/scaffold-hbar`. Use the names that exist in the codebase:
-
-- `useScaffoldReadContract` — not `useScaffoldContractRead`
-- `useScaffoldWriteContract` — not `useScaffoldContractWrite`
-
-Also: `useScaffoldWatchContractEvent`, `useScaffoldEventHistory`, `useDeployedContractInfo`, `useScaffoldContract`, `useTransactor`.
-
-```typescript
-const { data: balance } = useScaffoldReadContract({
-  contractName: "HederaToken",
-  functionName: "balanceOf",
-  args: [connectedAddress],
-});
-
-const { writeContractAsync, isPending } = useScaffoldWriteContract({
-  contractName: "HederaToken",
-});
-
-await writeContractAsync({
-  functionName: "mint",
-  args: [connectedAddress, parseEther("1")],
-});
-```
-
-`HederaToken.mint` is `onlyOwner`. For HTS creation, `HtsTokenCreator.createToken` is payable (HTS fee via `msg.value`) and emits `TokenCreated`.
-
-### UI
-
-Use `@scaffold-hbar-ui/components` for web3 UI: `Address`, `AddressInput`, `Balance`, `EtherInput`, `IntegerInput`.
-
-Use DaisyUI classes, not raw Tailwind when a DaisyUI component exists:
-
-```tsx
-<button className="btn btn-primary">Connect</button>
-```
-
-### Networks
-
-- Hardhat: `packages/hardhat/hardhat.config.ts` (`hederaTestnet` 296, `hederaMainnet` 295)
-- Foundry: `packages/foundry/foundry.toml` (`hedera_testnet`, `hedera_mainnet`)
-- Next.js: `packages/nextjs/scaffold.config.ts` (target networks, polling, RPC overrides, WalletConnect)
+Use DaisyUI components (`btn`, `input`, `alert`, `badge`) before raw Tailwind. Imports use the `~~` alias; Prettier sorts them (react → next → packages → `@sh/*` → `~~/*` → relative).
 
 ## Style
 
-| Style            | Use                                      |
-| ---------------- | ---------------------------------------- |
-| `UpperCamelCase` | types, components                        |
-| `lowerCamelCase` | variables, functions                     |
-| `CONSTANT_CASE`  | constants                                |
-| `snake_case`     | Hardhat deploy files and Foundry scripts |
-
-Next.js imports use the `~~` alias:
-
-```tsx
-import { useTargetNetwork } from "~~/hooks/scaffold-hbar";
-```
-
-App Router pages live under `packages/nextjs/app/`. Add `"use client"` when the page uses hooks.
-
-Prefer `type` over `interface`. No `T` prefix on types. Let TypeScript infer when it can. Comments should add information.
+- `type` over `interface`, no `T` prefixes, let TypeScript infer.
+- Comments explain why, not what.
+- A deliberate shortcut gets a `ponytail:` comment that names its limit and the upgrade path.
+- Small commits; every change goes through an issue and a PR.

@@ -56,27 +56,22 @@ You need a deployer account with HBAR on the target network. Without funds, depl
    yarn hardhat:deploy --network hederaTestnet
    ```
 
-   or
-
-   ```bash
-   yarn hardhat:deploy --network hedera_testnet
-   ```
-
-   You will be prompted to enter the password to decrypt your deployer key.
+   You will be prompted to enter the password to decrypt your deployer key (or export a plain `DEPLOYER_PRIVATE_KEY` to skip the prompt in CI).
 
 4. **Verify on Sourcify** (shows as verified on HashScan). Uses the solc standard-json from `artifacts/build-info` and submits directly to the Sourcify API v2 — `@nomicfoundation/hardhat-verify` is not used because its Hardhat 2-compatible line only speaks the removed Sourcify API v1:
    ```bash
-   yarn hardhat:verify -- HederaToken testnet                          # address from deployments/hederaTestnet/
-   yarn hardhat:verify -- HederaToken testnet 0xYourContractAddress    # explicit address
+   yarn hardhat:verify -- RwaToken testnet                          # address from deployments/hederaTestnet/
+   yarn hardhat:verify -- RwaToken testnet 0xYourContractAddress    # explicit address
    ```
    Use `mainnet` instead of `testnet` for chain 295.
 
 ## Layout
 
-- `contracts/` — Solidity sources
-- `deploy/` — hardhat-deploy scripts (e.g. `00_deploy_hedera_token.ts`)
-- `scripts/` — generateAccount, importAccount, verifySourcify.ts, etc.
-- `test/` — contract tests
+- `contracts/core/` — shared interfaces; `contracts/adapters/` — provider implementations; `contracts/modules/<id>/` — module contracts
+- `deploy/` — one hardhat-deploy step per module (`00_core_audit_topic.ts`, `10_rwa.ts`, …)
+- `scripts/` — account management, Sourcify verification, the deploy wrapper and `demo.ts` (+ `demo/<module>.ts`)
+- `test/` — contract tests; `test/modules/` per module
+- `utils/hedera.ts` — SDK client from the deployer key, `hederaResources.json` writer
 - `hardhat.config.ts` — networks (`hardhat`, `localhost` for RPC at 127.0.0.1:8545, `hederaTestnet`, `hederaMainnet`)
 
 Network and RPC URLs are in `hardhat.config.ts`. Deployer key is read from `.env` (encrypted) and decrypted at deploy time for live networks.
