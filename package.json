@@ -4,12 +4,13 @@
   "private": true,
   "workspaces": {
     "packages": [
+      "packages/shared",
       "packages/hardhat",
       "packages/nextjs"
     ]
   },
   "scripts": {
-    "format": "yarn next:format && yarn hardhat:format",
+    "format": "yarn next:format && yarn hardhat:format && yarn shared:format",
     "hardhat:account": "yarn workspace @sh/hardhat account",
     "hardhat:account:generate": "yarn workspace @sh/hardhat account:generate",
     "hardhat:account:import": "yarn workspace @sh/hardhat account:import",
@@ -26,7 +27,8 @@
     "hardhat:lint-staged": "yarn workspace @sh/hardhat lint-staged",
     "hardhat:test": "yarn workspace @sh/hardhat test",
     "hardhat:verify": "yarn workspace @sh/hardhat verify:contract",
-    "lint": "yarn next:lint && yarn hardhat:lint",
+    "lint": "yarn next:lint && yarn hardhat:lint && yarn shared:check-types",
+    "lint-staged": "lint-staged",
     "next:build": "yarn workspace @sh/nextjs build",
     "next:check-types": "yarn workspace @sh/nextjs check-types",
     "next:dev": "yarn workspace @sh/nextjs dev",
@@ -36,7 +38,9 @@
     "next:start": "yarn workspace @sh/nextjs start",
     "postinstall": "husky",
     "precommit": "lint-staged",
-    "lint-staged": "lint-staged"
+    "shared:check-types": "yarn workspace @sh/shared check-types",
+    "shared:format": "yarn workspace @sh/shared format",
+    "shared:test": "yarn workspace @sh/shared test"
   },
   "packageManager": "yarn@3.2.3",
   "devDependencies": {
