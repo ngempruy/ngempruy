@@ -1,5 +1,6 @@
 import type { ComponentType } from "react";
 import { AuditFeed } from "./core/AuditFeed";
+import { PaymentsView } from "./payments/PaymentsView";
 import { RwaView } from "./rwa/RwaView";
 
 /**
@@ -9,4 +10,5 @@ import { RwaView } from "./rwa/RwaView";
 export const moduleViews: Record<string, ComponentType<{ ready: boolean }>> = {
   core: AuditFeed,
   rwa: RwaView,
+  payments: PaymentsView,
 };
