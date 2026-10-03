@@ -1,6 +1,7 @@
 {
   "296": {
     "auditTopicId": "0.0.10843261",
-    "rwaTokenId": "0.0.10843354"
+    "rwaTokenId": "0.0.10843354",
+    "rwaUsdcPair": "0x3C91DcF12c47B5EB3345Fbf90F7891C32431eE8D"
   }
 }
