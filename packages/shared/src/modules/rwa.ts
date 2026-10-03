@@ -13,6 +13,8 @@ export const rwa = defineModule({
     "packages/hardhat/deploy/10_rwa.ts",
     "packages/hardhat/test/modules/RwaNavOracle.test.ts",
     "packages/hardhat/test/modules/RwaToken.test.ts",
+    "packages/hardhat/test/helpers.ts",
+    "packages/hardhat/contracts/test/MockHts.sol",
     "packages/nextjs/modules/rwa",
   ],
 });
