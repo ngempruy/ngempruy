@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { integrations, missingEnv, modules } from "@sh/shared";
+import { integrations, missingEnvFor, modules } from "@sh/shared";
 
 // Module status depends on env, which is read per request.
 export const dynamic = "force-dynamic";
@@ -22,7 +22,7 @@ export default function Home() {
           <h2 className="mb-4 text-xl font-bold">Modules</h2>
           <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 md:grid-cols-2">
             {modules.map(m => {
-              const ready = missingEnv(m, process.env).length === 0;
+              const ready = missingEnvFor(m.id, modules, process.env).length === 0;
               return (
                 <li key={m.id}>
                   <Link
