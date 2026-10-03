@@ -9,7 +9,9 @@ const TESTNET_CHAIN_ID = 296;
 export async function postAuditEntry(entry: AuditEntry) {
   const topicId = auditTopicId(TESTNET_CHAIN_ID);
   if (!topicId)
-    throw new Error("No audit topic. Run `yarn deploy --network hederaTestnet` or set NEXT_PUBLIC_AUDIT_TOPIC_ID.");
+    throw new Error(
+      "No audit topic. Run `yarn hardhat:deploy --network hederaTestnet` or set NEXT_PUBLIC_AUDIT_TOPIC_ID.",
+    );
 
   const message = encodeAuditEntry(entry);
   const { client } = operatorClient();
