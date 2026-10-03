@@ -50,13 +50,37 @@ export function renderEnvExample(current: string, vars: EnvVar[]): string {
   return `${head}${ENV_MARKER}\n${body}\n`;
 }
 
-/** Paths, package scripts and npm dependencies owned by modules and recipes that the resolution does not keep. */
+/**
+ * Paths, package scripts and npm dependencies owned by modules and recipes that the resolution
+ * does not keep. Anything a kept module or recipe also owns is never pruned.
+ */
 export function prunePlan(catalog: ModuleManifest[], recipes: IntegrationRecipe[], resolution: Resolution) {
-  const kept = new Set<object>([...resolution.modules, ...resolution.integrations]);
+  const keptItems = [...resolution.modules, ...resolution.integrations];
+  const kept = new Set<object>(keptItems);
   const dropped = [...catalog, ...recipes].filter(item => !kept.has(item));
+  const keep = (pick: (i: ModuleManifest | IntegrationRecipe) => string[]) => new Set(keptItems.flatMap(pick));
+  const keptPaths = keep(i => i.paths);
+  const keptScripts = keep(i => i.scripts);
+  const keptDeps = keep(i => i.dependencies);
+  const unique = (values: string[], exclude: Set<string>) => [...new Set(values)].filter(v => !exclude.has(v));
   return {
-    paths: dropped.flatMap(d => d.paths),
-    scripts: dropped.flatMap(d => d.scripts),
-    dependencies: dropped.flatMap(d => d.dependencies),
+    paths: unique(
+      dropped.flatMap(d => d.paths),
+      keptPaths,
+    ),
+    scripts: unique(
+      dropped.flatMap(d => d.scripts),
+      keptScripts,
+    ),
+    dependencies: unique(
+      dropped.flatMap(d => d.dependencies),
+      keptDeps,
+    ),
   };
+}
+
+/** True when `path` is a non-empty relative path that stays inside the repo (no "", ".", "..", absolute). */
+export function isSafeRepoPath(path: string): boolean {
+  const parts = path.split(/[\\/]+/);
+  return path.trim() !== "" && !/^([a-zA-Z]:)?[\\/]/.test(path) && parts.every(p => p !== "..") && path !== ".";
 }
