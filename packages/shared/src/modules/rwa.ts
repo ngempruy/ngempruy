@@ -11,6 +11,7 @@ export const rwa = defineModule({
     "packages/shared/src/modules/rwa.ts",
     "packages/hardhat/contracts/modules/rwa",
     "packages/hardhat/deploy/10_rwa.ts",
+    "packages/hardhat/scripts/demo/rwa.ts",
     "packages/hardhat/test/modules/RwaNavOracle.test.ts",
     "packages/hardhat/test/modules/RwaToken.test.ts",
     "packages/hardhat/test/helpers.ts",

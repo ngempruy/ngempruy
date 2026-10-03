@@ -11,6 +11,7 @@
   },
   "scripts": {
     "configure": "yarn workspace @sh/shared configure",
+    "demo": "yarn workspace @sh/hardhat demo",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "hardhat:account": "yarn workspace @sh/hardhat account",
