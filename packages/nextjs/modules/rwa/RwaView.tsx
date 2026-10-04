@@ -4,6 +4,7 @@ import { useState } from "react";
 import { type Address, erc20Abi, formatUnits, isAddress, keccak256, parseUnits, toBytes } from "viem";
 import { useAccount, useReadContract, useWriteContract } from "wagmi";
 import { hashscanUrl } from "@sh/shared";
+import { Panel, Stat } from "~~/components/kit";
 import { useScaffoldReadContract, useScaffoldWriteContract, useTransactor } from "~~/hooks/scaffold-hbar";
 import { recordAudit } from "~~/utils/recordAudit";
 
@@ -99,7 +100,7 @@ export const RwaView = () => {
       {account && hasToken && (
         <Panel title="Investor" hint="Associate once before receiving units; compliance must also grant you KYC.">
           <button
-            className="btn btn-sm btn-primary"
+            className="btn btn-sm btn-primary self-start"
             onClick={() =>
               transactor(() =>
                 writeContractAsync({ address: token as Address, abi: hrc719Abi, functionName: "associate" }),
@@ -142,23 +143,6 @@ export const RwaView = () => {
     </div>
   );
 };
-
-const Stat = ({ label, children }: { label: string; children: React.ReactNode }) => (
-  <div className="bg-base-100 border-base-300 rounded-2xl border p-5">
-    <p className="text-base-content/60 m-0 text-xs uppercase tracking-wider">{label}</p>
-    <div className="mt-1 font-semibold">{children}</div>
-  </div>
-);
-
-const Panel = ({ title, hint, children }: { title: string; hint: string; children: React.ReactNode }) => (
-  <section className="bg-base-100 border-base-300 flex flex-col gap-3 rounded-2xl border p-5">
-    <div>
-      <h3 className="m-0 font-bold">{title}</h3>
-      <p className="text-base-content/70 m-0 text-sm">{hint}</p>
-    </div>
-    {children}
-  </section>
-);
 
 const AddressAction = ({
   title,

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { type Address, erc20Abi, formatUnits, parseUnits } from "viem";
 import { useAccount, useWriteContract } from "wagmi";
 import { hashscanUrl } from "@sh/shared";
+import { Panel, Stat } from "~~/components/kit";
 import { useDeployedContractInfo, useScaffoldReadContract, useTransactor } from "~~/hooks/scaffold-hbar";
 import { recordAudit } from "~~/utils/recordAudit";
 
@@ -86,15 +87,16 @@ export const FlashLoanView = () => {
       {status && <p className="alert m-0 text-sm">{status}</p>}
 
       {flash && (
-        <section className="bg-base-100 border-base-300 flex flex-col gap-3 rounded-2xl border p-5">
-          <div>
-            <h3 className="m-0 font-bold">Arbitrage WHBAR → SAUCE → WHBAR</h3>
-            <p className="text-base-content/70 m-0 text-sm">
+        <Panel
+          title="Arbitrage WHBAR → SAUCE → WHBAR"
+          hint={
+            <>
               Borrows WHBAR, trades through a different pair than the one it borrowed from (the source pair is locked
               during the loan) and repays in the same transaction. Without a price gap the round trip costs the fees, so
               the owner caps what they pay with Max cost; the whole transaction reverts above it.
-            </p>
-          </div>
+            </>
+          }
+        >
           {isOwner ? (
             <div className="flex flex-wrap items-center gap-2">
               <label className="text-sm">Loan</label>
@@ -128,7 +130,7 @@ export const FlashLoanView = () => {
               . Deploy your own with <code>yarn hardhat:deploy --tags flashloan</code>.
             </p>
           )}
-        </section>
+        </Panel>
       )}
     </div>
   );
@@ -138,11 +140,4 @@ const ContractLink = ({ address, children }: { address: Address; children: React
   <a className="link" target="_blank" href={hashscanUrl(TESTNET_CHAIN_ID, "contract", address)}>
     {children}
   </a>
-);
-
-const Stat = ({ label, children }: { label: string; children: React.ReactNode }) => (
-  <div className="bg-base-100 border-base-300 rounded-2xl border p-5">
-    <p className="text-base-content/60 m-0 text-xs uppercase tracking-wider">{label}</p>
-    <div className="mt-1 font-semibold">{children}</div>
-  </div>
 );
