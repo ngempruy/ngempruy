@@ -18,6 +18,8 @@ export default async function lendingDemo({ hre, send }: DemoContext) {
   const { whbar, usdc, whbarContract } = LENDING_TESTNET;
   const market = await ethers.getContractAt("LendingMarket", (await deployments.get("LendingMarket")).address);
   const marketAddress = await market.getAddress();
+  // Pin the legacy gas price on every tx: hashio's EIP-1559 fee data is sometimes below the network minimum.
+  const { gasPrice } = await ethers.provider.getFeeData();
   const kit = { name: "LendingMarket", contract: market };
   const checkScheduled = market.interface.getEvent("CheckScheduled").topicHash;
   const [maxLtv, threshold, interval] = await Promise.all([
@@ -32,37 +34,50 @@ export default async function lendingDemo({ hre, send }: DemoContext) {
     owner,
   );
   if ((await usdcToken.balanceOf(marketAddress)) < LOAN) {
-    await send("owner approves USDC liquidity", usdcToken.approve(marketAddress, LOAN, { gasLimit: 1_000_000 }));
-    await send("owner supplies 0.15 USDC of liquidity", market.supplyLiquidity(LOAN, { gasLimit: 500_000 }));
+    await send(
+      "owner approves USDC liquidity",
+      usdcToken.approve(marketAddress, LOAN, { gasLimit: 1_000_000, gasPrice }),
+    );
+    await send("owner supplies 0.15 USDC of liquidity", market.supplyLiquidity(LOAN, { gasLimit: 500_000, gasPrice }));
   }
   await send(
     `owner shortens the check interval to ${DEMO_INTERVAL}s for the demo`,
-    market.setRiskParams(maxLtv, threshold, DEMO_INTERVAL, { gasLimit: 300_000 }),
+    market.setRiskParams(maxLtv, threshold, DEMO_INTERVAL, { gasLimit: 300_000, gasPrice }),
     kit,
   );
 
   const borrower = ethers.Wallet.createRandom().connect(ethers.provider);
   await send(
     `fund borrower ${borrower.address} with 15 HBAR`,
-    owner.sendTransaction({ to: borrower.address, value: ethers.parseEther("15") }),
+    owner.sendTransaction({ to: borrower.address, value: ethers.parseEther("15"), gasPrice }),
   );
   for (const [name, address] of [
     ["WHBAR", whbar],
     ["USDC", usdc],
   ]) {
     const hrc719 = new ethers.Contract(address, ["function associate() returns (uint256)"], borrower);
-    await send(`borrower associates ${name} (HIP-719)`, hrc719.associate({ gasLimit: 1_000_000 }));
+    await send(`borrower associates ${name} (HIP-719)`, hrc719.associate({ gasLimit: 1_000_000, gasPrice }));
   }
   const wrapper = new ethers.Contract(whbarContract, ["function deposit() payable"], borrower);
-  await send("borrower wraps 5 HBAR", wrapper.deposit({ value: COLLATERAL * TINYBAR_TO_WEIBAR, gasLimit: 300_000 }));
+  await send(
+    "borrower wraps 5 HBAR",
+    wrapper.deposit({ value: COLLATERAL * TINYBAR_TO_WEIBAR, gasLimit: 300_000, gasPrice }),
+  );
   const whbarToken = new ethers.Contract(whbar, ["function approve(address,uint256) returns (bool)"], borrower);
-  await send("borrower approves the market", whbarToken.approve(marketAddress, COLLATERAL, { gasLimit: 1_000_000 }));
+  await send(
+    "borrower approves the market",
+    whbarToken.approve(marketAddress, COLLATERAL, { gasLimit: 1_000_000, gasPrice }),
+  );
 
   const asBorrower = market.connect(borrower);
-  await send("borrower deposits 5 WHBAR of collateral", asBorrower.deposit(COLLATERAL, { gasLimit: 500_000 }), kit);
+  await send(
+    "borrower deposits 5 WHBAR of collateral",
+    asBorrower.deposit(COLLATERAL, { gasLimit: 500_000, gasPrice }),
+    kit,
+  );
   await send(
     "borrower borrows 0.15 USDC (schedules a health check)",
-    asBorrower.borrow(LOAN, { gasLimit: 3_000_000 }),
+    asBorrower.borrow(LOAN, { gasLimit: 3_000_000, gasPrice }),
     kit,
   );
 
@@ -75,7 +90,7 @@ export default async function lendingDemo({ hre, send }: DemoContext) {
 
   await send(
     "owner lowers the liquidation threshold below the loan's LTV",
-    market.setRiskParams(2_000, 2_500, DEMO_INTERVAL, { gasLimit: 300_000 }),
+    market.setRiskParams(2_000, 2_500, DEMO_INTERVAL, { gasLimit: 300_000, gasPrice }),
     kit,
   );
   await waitFor("the next scheduled check liquidates the position on its own", async () => {
@@ -86,7 +101,7 @@ export default async function lendingDemo({ hre, send }: DemoContext) {
 
   await send(
     "owner restores the risk parameters",
-    market.setRiskParams(maxLtv, threshold, interval, { gasLimit: 300_000 }),
+    market.setRiskParams(maxLtv, threshold, interval, { gasLimit: 300_000, gasPrice }),
     kit,
   );
 }
