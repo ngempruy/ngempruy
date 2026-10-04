@@ -4,6 +4,7 @@ import { useState } from "react";
 import { type Address, erc20Abi, formatUnits, parseEther, parseUnits } from "viem";
 import { useAccount, useReadContracts, useWriteContract } from "wagmi";
 import { hashscanUrl } from "@sh/shared";
+import { Panel, Stat } from "~~/components/kit";
 import { useDeployedContractInfo, useScaffoldReadContract, useTransactor } from "~~/hooks/scaffold-hbar";
 import { recordAudit } from "~~/utils/recordAudit";
 
@@ -90,14 +91,15 @@ export const DexView = () => {
       {status && <p className="alert m-0 text-sm">{status}</p>}
 
       {account && adapter && (
-        <section className="bg-base-100 border-base-300 flex flex-col gap-3 rounded-2xl border p-5">
-          <div>
-            <h3 className="m-0 font-bold">Swap HBAR → USDC</h3>
-            <p className="text-base-content/70 m-0 text-sm">
+        <Panel
+          title="Swap HBAR → USDC"
+          hint={
+            <>
               HTS tokens need an association before you can hold them, and the router trades WHBAR, not native HBAR.
               Minimum received: {minOut !== undefined ? formatUnits(minOut, USDC.decimals) : "—"} USDC (1% slippage).
-            </p>
-          </div>
+            </>
+          }
+        >
           <div className="flex flex-wrap items-center gap-2">
             <input
               className="input input-sm input-bordered w-32"
@@ -136,15 +138,8 @@ export const DexView = () => {
               3. Swap
             </button>
           </div>
-        </section>
+        </Panel>
       )}
     </div>
   );
 };
-
-const Stat = ({ label, children }: { label: string; children: React.ReactNode }) => (
-  <div className="bg-base-100 border-base-300 rounded-2xl border p-5">
-    <p className="text-base-content/60 m-0 text-xs uppercase tracking-wider">{label}</p>
-    <div className="mt-1 font-semibold">{children}</div>
-  </div>
-);

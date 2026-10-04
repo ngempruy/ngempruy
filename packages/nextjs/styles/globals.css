@@ -60,25 +60,26 @@
 @plugin "daisyui/theme" {
   name: "dark";
 
+  /* Near-black surfaces with a violet/magenta accent (MotionSites "Cybersecurity Hero" palette) */
   --color-primary: #8259ef;
   --color-primary-content: #ffffff;
-  --color-secondary: #4f46e5;
+  --color-secondary: #b04090;
   --color-secondary-content: #ffffff;
-  --color-accent: #2d84eb;
-  --color-accent-content: #ffffff;
-  --color-neutral: #ffffff;
-  --color-neutral-content: #11151d;
-  --color-base-100: #181c27;
-  --color-base-200: #11151d;
-  --color-base-300: #0a0d14;
-  --color-base-content: #f0f0f2;
+  --color-accent: #c8a0e0;
+  --color-accent-content: #0a0a0f;
+  --color-neutral: #f0f0f5;
+  --color-neutral-content: #0a0a0f;
+  --color-base-100: #111118;
+  --color-base-200: #0a0a0f;
+  --color-base-300: #1e1e2c;
+  --color-base-content: #f0f0f5;
   --color-info: #2d84eb;
   --color-success: #34eeb6;
   --color-warning: #ffcf72;
   --color-error: #ff8863;
 
   --radius-field: 9999rem;
-  --radius-box: 1rem;
+  --radius-box: 1.25rem;
 
   --tt-tailw: 6px;
   --tt-bg: var(--color-primary);
@@ -149,4 +150,200 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* ---- Kit visuals (adapted from MotionSites: Atlas Nav, Cybersecurity Hero, Glow Features) ---- */
+
+/* Glass panel used by header dropdowns and the mobile sheet */
+.glass-panel {
+  background: color-mix(in oklab, var(--color-base-100) 96%, transparent);
+  border: 1px solid color-mix(in oklab, var(--color-base-content) 9%, transparent);
+  box-shadow:
+    0 30px 70px -25px rgb(0 0 0 / 0.55),
+    0 2px 10px rgb(0 0 0 / 0.15);
+  backdrop-filter: blur(22px) saturate(140%);
+}
+
+.dropdown-pop {
+  animation: dropdown-pop 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: 50% 0;
+}
+
+@keyframes dropdown-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.97);
+    filter: blur(6px);
+  }
+}
+
+/* Hero card: dark surface, magenta arc and a grid that only shows inside the arc */
+.hero-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: #0d0b12;
+  border: 1px solid rgb(255 255 255 / 0.07);
+  color: #f0f0f5;
+}
+
+.hero-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at 50% -70%,
+      transparent 60%,
+      rgb(130 89 239 / 0.04) 63%,
+      rgb(130 89 239 / 0.12) 66%,
+      rgb(150 70 200 / 0.28) 69%,
+      rgb(176 64 144 / 0.45) 72%,
+      rgb(176 64 144 / 0.64) 75%,
+      rgb(176 64 144 / 0.8) 79%,
+      rgb(210 70 175 / 0.92) 85%,
+      rgb(240 110 210 / 0.88) 87%,
+      rgb(255 205 250 / 0.92) 91%,
+      rgb(255 240 255 / 0.98) 93%,
+      #fff 95%
+    ),
+    radial-gradient(circle at 50% 35%, rgb(120 40 180 / 0.1) 0%, transparent 50%);
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.07) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(circle at 50% -70%, transparent 60%, black 78%);
+}
+
+.hero-title-gradient {
+  background: linear-gradient(to right, #ffffff, #c8a0e0 55%, #b04090);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Neumorphic pipeline nodes with a light beam travelling along the lines between them */
+.pipeline-node {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  background: #1a1a24;
+  color: rgb(255 255 255 / 0.75);
+  box-shadow:
+    6px 6px 12px rgb(0 0 0 / 0.4),
+    -4px -4px 10px rgb(255 255 255 / 0.03),
+    inset 1px 1px 1px rgb(255 255 255 / 0.05),
+    inset 4px 4px 8px rgb(0 0 0 / 0.4);
+}
+
+.pipeline-node-center {
+  width: 4.25rem;
+  height: 4.25rem;
+  background: #1e1e2c;
+  color: #fff;
+  box-shadow:
+    8px 8px 16px rgb(0 0 0 / 0.5),
+    -6px -6px 14px rgb(255 255 255 / 0.04),
+    inset 1px 1px 2px rgb(255 255 255 / 0.06),
+    inset 6px 6px 12px rgb(0 0 0 / 0.5),
+    0 0 40px -6px rgb(176 64 144 / 0.6);
+}
+
+.pipeline-line {
+  position: relative;
+  height: 1px;
+  width: clamp(3rem, 12vw, 10rem);
+  overflow: hidden;
+  background: linear-gradient(90deg, rgb(255 255 255 / 0.15), rgb(255 255 255 / 0.07));
+}
+
+.pipeline-line::after {
+  content: "";
+  position: absolute;
+  inset: -1px 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, #b04090 30%, #fff 50%, #c8a0e0 70%, transparent);
+  filter: drop-shadow(0 0 3px #b04090);
+  animation: beam 3.4s ease-in-out infinite;
+}
+
+.pipeline-line.right::after {
+  animation-delay: 1.7s;
+}
+
+@keyframes beam {
+  0% {
+    transform: translateX(-120%);
+  }
+  50%,
+  100% {
+    transform: translateX(260%);
+  }
+}
+
+/* Glow card: blurred gradient behind, gradient border in front (background-clip technique) */
+.glow-card {
+  position: relative;
+  isolation: isolate;
+  height: 100%;
+}
+
+.glow-card::before {
+  content: "";
+  position: absolute;
+  inset: 8% 4% 0;
+  z-index: -1;
+  border-radius: 2rem;
+  background: var(--glow);
+  filter: blur(40px);
+  opacity: 0.35;
+  transition: opacity 0.4s ease;
+}
+
+.glow-card:hover::before {
+  opacity: 0.6;
+}
+
+.glow-card-inner {
+  height: 100%;
+  border-radius: 1.75rem;
+  border: 6px solid transparent;
+  background:
+    linear-gradient(var(--color-base-100), var(--color-base-100)) padding-box,
+    var(--glow) border-box;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.glow-card:hover .glow-card-inner {
+  transform: translateY(-3px);
+}
+
+.fade-up {
+  animation: fade-up 0.8s ease-out both;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pipeline-line::after,
+  .fade-up,
+  .dropdown-pop {
+    animation: none;
+  }
 }

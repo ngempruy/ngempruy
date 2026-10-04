@@ -1,114 +1,212 @@
 "use client";
 
-import React, { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bars3Icon, BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { Bars2Icon, BugAntIcon, ChevronDownIcon, MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { modules } from "@sh/shared";
+import { moduleMeta } from "~~/components/kit/moduleMeta";
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-hbar";
 import { useOutsideClick } from "~~/hooks/scaffold-hbar";
 
-type HeaderMenuLink = {
-  label: string;
-  href: string;
-  icon?: React.ReactNode;
-};
+type Menu = "modules" | "dev";
 
-export const menuLinks: HeaderMenuLink[] = [
-  {
-    label: "Home",
-    href: "/",
-  },
-  ...modules.map(m => ({ label: m.title, href: `/modules/${m.id}` })),
-  {
-    label: "Debug Contracts",
-    href: "/debug",
-    icon: <BugAntIcon className="h-4 w-4" />,
-  },
+const DEV_TOOLS = [
+  { label: "Debug Contracts", href: "/debug", hint: "Read and write any deployed kit contract", icon: BugAntIcon },
   {
     label: "Block Explorer",
     href: "/blockexplorer",
-    icon: <MagnifyingGlassIcon className="h-4 w-4" />,
+    hint: "Local transactions and addresses",
+    icon: MagnifyingGlassIcon,
   },
 ];
 
-export const HeaderMenuLinks = () => {
-  const pathname = usePathname();
-
-  return (
-    <>
-      {menuLinks.map(({ label, href, icon }) => {
-        const isActive = pathname === href;
-        return (
-          <li key={href}>
-            <Link
-              href={href}
-              passHref
-              className={`${
-                isActive ? "bg-primary/10 text-primary font-semibold" : "hover:bg-primary/5"
-              } grid grid-flow-col gap-2 rounded-full px-3 py-1.5 text-sm transition-colors`}
-            >
-              {icon}
-              <span>{label}</span>
-            </Link>
-          </li>
-        );
-      })}
-    </>
-  );
-};
-
 /**
- * Site header
+ * Site header. The module list is generated from the selected manifests, so it lives in a dropdown
+ * (and a sheet on small screens) instead of the bar: it grows with every module you add.
  */
 export const Header = () => {
-  const burgerMenuRef = useRef<HTMLDetailsElement>(null);
-  useOutsideClick(burgerMenuRef, () => {
-    burgerMenuRef?.current?.removeAttribute("open");
-  });
+  const pathname = usePathname();
+  const [open, setOpen] = useState<Menu | null>(null);
+  const [sheet, setSheet] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
+  useOutsideClick(navRef, () => setOpen(null));
+
+  useEffect(() => {
+    setOpen(null);
+    setSheet(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setOpen(null);
+      setSheet(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  const toggle = (menu: Menu) => setOpen(current => (current === menu ? null : menu));
+  const inModules = pathname.startsWith("/modules/");
+  const inDev = DEV_TOOLS.some(t => pathname.startsWith(t.href));
 
   return (
-    <div className="navbar bg-base-100 border-base-300 sticky top-0 z-20 min-h-0 shrink-0 justify-between border-b px-0 shadow-sm sm:px-2 lg:static">
-      <div className="navbar-start w-auto lg:w-1/2">
-        <details className="dropdown" ref={burgerMenuRef}>
-          <summary className="btn btn-ghost ml-1 hover:bg-transparent lg:hidden">
-            <Bars3Icon className="h-1/2" />
-          </summary>
-          <ul
-            className="menu menu-compact dropdown-content bg-base-100 rounded-box mt-3 w-52 p-2 shadow-sm"
-            onClick={() => {
-              burgerMenuRef?.current?.removeAttribute("open");
-            }}
-          >
-            <HeaderMenuLinks />
-          </ul>
-        </details>
-        <Link href="/" passHref className="ml-4 mr-6 hidden shrink-0 items-center gap-3 lg:flex">
-          <div className="relative flex h-9 w-9">
-            <Image alt="ngempruy logo" className="cursor-pointer dark:hidden" fill sizes="36px" src="/logo-black.png" />
-            <Image
-              alt="ngempruy logo"
-              className="hidden cursor-pointer dark:block"
-              fill
-              sizes="36px"
-              src="/logo-white.png"
-            />
+    <header className="border-base-content/10 bg-base-100/80 sticky top-0 z-30 border-b backdrop-blur-xl">
+      <div className="mx-auto grid h-16 max-w-6xl grid-cols-[1fr_auto] items-center gap-4 px-4 lg:grid-cols-[1fr_auto_1fr]">
+        <Link href="/" className="flex w-fit shrink-0 items-center gap-3">
+          <div className="relative h-8 w-8">
+            <Image alt="ngempruy logo" className="dark:hidden" fill sizes="32px" src="/logo-black.png" />
+            <Image alt="ngempruy logo" className="hidden dark:block" fill sizes="32px" src="/logo-white.png" />
           </div>
           <div className="flex flex-col">
-            <span className="text-base font-bold leading-tight">Hedera DeFi Kit</span>
-            <span className="text-base-content/50 text-[10px] font-medium uppercase tracking-wider">
+            <span className="whitespace-nowrap text-[15px] font-bold leading-tight">Hedera DeFi Kit</span>
+            <span className="text-base-content/50 hidden text-[10px] font-medium uppercase tracking-wider sm:block">
               Built on Hedera
             </span>
           </div>
         </Link>
-        <ul className="menu menu-horizontal hidden gap-2 px-1 lg:flex lg:flex-nowrap">
-          <HeaderMenuLinks />
-        </ul>
+
+        <nav ref={navRef} aria-label="Main" className="relative hidden items-center gap-1 lg:flex">
+          <NavLink href="/" active={pathname === "/"}>
+            Home
+          </NavLink>
+          <Trigger label="Modules" active={inModules} expanded={open === "modules"} onClick={() => toggle("modules")} />
+          <Trigger label="Dev tools" active={inDev} expanded={open === "dev"} onClick={() => toggle("dev")} />
+
+          {open === "modules" && (
+            <div className="glass-panel dropdown-pop absolute left-1/2 top-12 w-[600px] -translate-x-1/2 rounded-2xl p-2">
+              <ul className="m-0 grid list-none grid-cols-2 gap-1 p-0">
+                {modules.map(m => {
+                  const { icon: Icon, gradient } = moduleMeta(m.id);
+                  return (
+                    <li key={m.id}>
+                      <Link
+                        href={`/modules/${m.id}`}
+                        className={`hover:bg-base-content/5 flex gap-3 rounded-xl p-3 transition-colors ${
+                          pathname === `/modules/${m.id}` ? "bg-base-content/5" : ""
+                        }`}
+                      >
+                        <span
+                          className="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-white"
+                          style={{ background: gradient }}
+                        >
+                          <Icon className="h-5 w-5 text-black/70" />
+                        </span>
+                        <span className="min-w-0">
+                          <strong className="block text-sm font-semibold">{m.title}</strong>
+                          <span className="text-base-content/60 line-clamp-2 text-xs leading-snug">
+                            {m.description}
+                          </span>
+                        </span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
+
+          {open === "dev" && (
+            <div className="glass-panel dropdown-pop absolute left-1/2 top-12 w-72 -translate-x-1/4 rounded-2xl p-2">
+              {DEV_TOOLS.map(({ label, href, hint, icon: Icon }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="hover:bg-base-content/5 flex items-center gap-3 rounded-xl p-3 transition-colors"
+                >
+                  <Icon className="text-base-content/70 h-5 w-5 shrink-0" />
+                  <span>
+                    <strong className="block text-sm font-semibold">{label}</strong>
+                    <span className="text-base-content/60 text-xs">{hint}</span>
+                  </span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </nav>
+
+        <div className="flex items-center justify-end gap-2">
+          <RainbowKitCustomConnectButton />
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm btn-circle lg:hidden"
+            aria-label={sheet ? "Close menu" : "Open menu"}
+            aria-expanded={sheet}
+            onClick={() => setSheet(s => !s)}
+          >
+            {sheet ? <XMarkIcon className="h-5 w-5" /> : <Bars2Icon className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
-      <div className="navbar-end mr-4 grow">
-        <RainbowKitCustomConnectButton />
-      </div>
-    </div>
+
+      {sheet && (
+        <div className="glass-panel dropdown-pop absolute left-3 right-3 top-[4.25rem] max-h-[calc(100svh-6rem)] overflow-auto rounded-2xl p-3 lg:hidden">
+          <SheetGroup title="Modules">
+            {modules.map(m => (
+              <SheetLink key={m.id} href={`/modules/${m.id}`}>
+                {m.title}
+              </SheetLink>
+            ))}
+          </SheetGroup>
+          <SheetGroup title="Dev tools">
+            {DEV_TOOLS.map(t => (
+              <SheetLink key={t.href} href={t.href}>
+                {t.label}
+              </SheetLink>
+            ))}
+          </SheetGroup>
+        </div>
+      )}
+    </header>
   );
 };
+
+const navItem = "rounded-full px-3.5 py-1.5 text-sm transition-colors";
+
+const NavLink = ({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) => (
+  <Link
+    href={href}
+    className={`${navItem} ${active ? "text-base-content font-semibold" : "text-base-content/70 hover:text-base-content"}`}
+  >
+    {children}
+  </Link>
+);
+
+const Trigger = ({
+  label,
+  active,
+  expanded,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  expanded: boolean;
+  onClick: () => void;
+}) => (
+  <button
+    type="button"
+    aria-expanded={expanded}
+    onClick={onClick}
+    className={`${navItem} inline-flex items-center gap-1.5 ${
+      active || expanded ? "text-base-content font-semibold" : "text-base-content/70 hover:text-base-content"
+    }`}
+  >
+    {label}
+    <ChevronDownIcon className={`h-3.5 w-3.5 transition-transform duration-300 ${expanded ? "rotate-180" : ""}`} />
+  </button>
+);
+
+const SheetGroup = ({ title, children }: { title: string; children: React.ReactNode }) => (
+  <div className="mb-2">
+    <h3 className="text-base-content/50 m-0 px-3 pb-1 pt-2 text-xs font-medium uppercase tracking-wider">{title}</h3>
+    {children}
+  </div>
+);
+
+const SheetLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
+  <Link href={href} className="hover:bg-base-content/5 block rounded-lg px-3 py-2.5 text-[15px]">
+    {children}
+  </Link>
+);
