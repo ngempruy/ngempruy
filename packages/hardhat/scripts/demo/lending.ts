@@ -1,4 +1,4 @@
-import { SAUCERSWAP_TESTNET } from "../../utils/saucerswap";
+import { LENDING_TESTNET } from "../../utils/lending";
 import type { DemoContext } from "../demo";
 
 const COLLATERAL = 500_000_000n; // 5 WHBAR
@@ -15,7 +15,7 @@ const MIRROR = "https://testnet.mirrornode.hedera.com/api/v1";
 export default async function lendingDemo({ hre, send }: DemoContext) {
   const { ethers, deployments } = hre;
   const [owner] = await ethers.getSigners();
-  const { whbar, usdc, whbarContract } = SAUCERSWAP_TESTNET;
+  const { whbar, usdc, whbarContract } = LENDING_TESTNET;
   const market = await ethers.getContractAt("LendingMarket", (await deployments.get("LendingMarket")).address);
   const marketAddress = await market.getAddress();
   const kit = { name: "LendingMarket", contract: market };

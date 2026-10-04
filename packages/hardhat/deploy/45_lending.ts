@@ -1,11 +1,9 @@
 import type { DeployFunction } from "hardhat-deploy/types";
 import type { HardhatRuntimeEnvironment } from "hardhat/types";
 import { getDeployGasPrice } from "../utils/getDeployGasPrice";
-import { SAUCERSWAP_TESTNET } from "../utils/saucerswap";
+import { LENDING_TESTNET } from "../utils/lending";
 
-/** Chainlink HBAR/USD on Hedera testnet (8 decimals); prices the WHBAR collateral. */
-const CHAINLINK_HBAR_USD = "0x59bC155EB6c6C415fE43255aF66EcF0523c92B4a";
-/** The testnet feed updates far less often than hourly, so allow a day. */
+/** Chainlink HBAR/USD prices the WHBAR collateral; the testnet feed updates far less than hourly, so allow a day. */
 const FEED_MAX_AGE = 86_400;
 /** 50% max LTV, liquidation above 80%, a scheduled health check every hour. */
 const RISK = { maxLtvBps: 5_000, liquidationThresholdBps: 8_000, checkInterval: 3_600 };
@@ -19,7 +17,7 @@ const deployLending: DeployFunction = async function (hre: HardhatRuntimeEnviron
   const { deploy, execute, log } = hre.deployments;
   const gasPrice = await getDeployGasPrice(hre);
   const tx = { from: deployer, gasLimit: "1000000", gasPrice };
-  const { whbar, usdc } = SAUCERSWAP_TESTNET;
+  const { whbar, usdc, chainlinkHbarUsd } = LENDING_TESTNET;
 
   const oracle = await deploy("ChainlinkOracleAdapter", {
     from: deployer,
@@ -30,7 +28,7 @@ const deployLending: DeployFunction = async function (hre: HardhatRuntimeEnviron
     gasPrice,
   });
   if (oracle.newlyDeployed) {
-    await execute("ChainlinkOracleAdapter", tx, "setFeed", whbar, CHAINLINK_HBAR_USD, FEED_MAX_AGE);
+    await execute("ChainlinkOracleAdapter", tx, "setFeed", whbar, chainlinkHbarUsd, FEED_MAX_AGE);
   }
 
   const market = await deploy("LendingMarket", {
