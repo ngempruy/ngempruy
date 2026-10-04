@@ -23,6 +23,7 @@
     "hardhat:clean": "yarn workspace @sh/hardhat clean",
     "hardhat:compile": "yarn workspace @sh/hardhat compile",
     "hardhat:deploy": "yarn workspace @sh/hardhat deploy",
+    "hardhat:deploy:testnet": "yarn workspace @sh/hardhat deploy --network hederaTestnet",
     "hardhat:flatten": "yarn workspace @sh/hardhat flatten",
     "hardhat:fork": "yarn workspace @sh/hardhat fork",
     "hardhat:lint": "yarn workspace @sh/hardhat lint",
