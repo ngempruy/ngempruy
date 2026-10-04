@@ -1,6 +1,6 @@
 # Hedera DeFi Kit
 
-Modular DeFi building blocks for Hedera: tokenized real-world assets, DEX liquidity, flash loans and pay-per-request APIs. Modules compose through shared interfaces, and every on-chain action is recorded on one HCS audit topic. Built on [Scaffold-HBAR](https://docs.hedera.com/solutions/tools/scaffold-hbar).
+Modular DeFi building blocks for Hedera: tokenized real-world assets, DEX liquidity, lending with network-scheduled liquidations, flash loans and pay-per-request APIs. Modules compose through shared interfaces, and every on-chain action is recorded on one HCS audit topic. Built on [Scaffold-HBAR](https://docs.hedera.com/solutions/tools/scaffold-hbar).
 
 ```bash
 npx create-scaffold-hbar@latest --template ngempruy/ngempruy
@@ -18,11 +18,13 @@ flowchart LR
   G --> S
   X[x402 paywall] -- sells --> N
   F[Flash loans] --> S
-  T & N & G & X & F -- events --> H[(HCS audit topic)]
+  L[LendingMarket] -- schedules its own checks --> HS[Schedule Service HIP-1215]
+  T & N & G & X & F & L -- events --> H[(HCS audit topic)]
 ```
 
 - **HTS** carries the asset. Its KYC, supply and treasury keys belong to a contract, so compliance is an on-chain role check and no issuer key lives on a server.
 - **SaucerSwap** provides liquidity and an exit. `NavBandSwap` only buys while the pool price stays within 2% of the appraised NAV.
+- **HIP-1215** lets `LendingMarket` schedule its own health checks; the network runs them and liquidates unhealthy loans with no keeper bot.
 - **x402** turns API routes into paid endpoints settled as native HBAR transfers; the facilitator pays the fee.
 - **HCS** stores one audit trail for every module, derived from on-chain events so it cannot be forged.
 
@@ -41,20 +43,22 @@ Server-side features (audit writes, x402) read `packages/nextjs/.env.local`; cop
 
 ## Modules
 
-| Module      | Provides                                                                                           | Hedera                             |
-| ----------- | -------------------------------------------------------------------------------------------------- | ---------------------------------- |
-| `core`      | Wallet, SDK client, HCS audit log, module navigation                                               | HCS, mirror node                   |
-| `rwa`       | `RwaToken` (contract-held KYC and supply keys) and `RwaNavOracle` (staleness and deviation guards) | HTS system contract, HIP-719       |
-| `dex`       | `SaucerSwapAdapter` behind `ISwapAdapter`                                                          | SaucerSwap V1                      |
-| `flashloan` | Arbitrage and liquidation strategies over SaucerSwap flash swaps; Bonzo Lend provider ready        | SaucerSwap V1, Bonzo               |
-| `payments`  | x402 paid API, capped agent payer, direct HBAR transfers                                           | Native transfers, x402 facilitator |
+| Module      | Provides                                                                                                           | Hedera                                      |
+| ----------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
+| `core`      | Wallet, SDK client, HCS audit log, module navigation                                                               | HCS, mirror node                            |
+| `rwa`       | `RwaToken` (contract-held KYC and supply keys) and `RwaNavOracle` (staleness and deviation guards)                 | HTS system contract, HIP-719                |
+| `dex`       | `SaucerSwapAdapter` behind `ISwapAdapter`                                                                          | SaucerSwap V1                               |
+| `flashloan` | Arbitrage and liquidation strategies over SaucerSwap flash swaps; Bonzo Lend provider ready                        | SaucerSwap V1, Bonzo                        |
+| `payments`  | x402 paid API, capped agent payer, direct HBAR transfers                                                           | Native transfers, x402 facilitator          |
+| `lending`   | Overcollateralised USDC loans; each borrow schedules `checkPosition` via HIP-1215, which reschedules or liquidates | Schedule Service (`0x16b`), oracle adapters |
 
 **Recipes** activate when all of their modules are selected:
 
-| Recipe         | Adds                                                                   |
-| -------------- | ---------------------------------------------------------------------- |
-| `dex+rwa`      | RWA/USDC pool with KYC for the pair, seeded at NAV, and `NavBandSwap`  |
-| `rwa+payments` | `GET /api/x402/nav-report`: NAV and appraisal history sold per request |
+| Recipe         | Adds                                                                             |
+| -------------- | -------------------------------------------------------------------------------- |
+| `dex+payments` | `SwapCheckout`: pay with any token, the merchant receives exactly the USDC price |
+| `dex+rwa`      | RWA/USDC pool with KYC for the pair, seeded at NAV, and `NavBandSwap`            |
+| `rwa+payments` | `GET /api/x402/nav-report`: NAV and appraisal history sold per request           |
 
 Keep only what you need. `yarn configure` resolves dependencies, regenerates config and `.env.example`, and deletes the files, scripts and packages of everything else:
 
@@ -64,17 +68,19 @@ yarn configure --modules rwa,payments
 
 ## Live on testnet
 
-Deployed by this repo's scripts from account `0.0.10394443`. The scaffolded app ships pre-wired to these, so the audit feed and asset pages show live data immediately.
+Deployed by this repo's scripts (lending and checkout from `0.0.10843533`, everything else from `0.0.10394443`). The scaffolded app ships pre-wired to these, so the audit feed and asset pages show live data immediately.
 
-|                                         |                                                                                                                                                                                                                                                                                                                                                             |
-| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| HCS audit topic                         | [0.0.10843261](https://hashscan.io/testnet/topic/0.0.10843261)                                                                                                                                                                                                                                                                                              |
-| RWA token (KYC key held by contract)    | [0.0.10843354](https://hashscan.io/testnet/token/0.0.10843354)                                                                                                                                                                                                                                                                                              |
-| RWA/USDC SaucerSwap pool                | [0.0.10844831](https://hashscan.io/testnet/contract/0.0.10844831)                                                                                                                                                                                                                                                                                           |
-| Grant KYC → issue → post NAV            | [KYC](https://hashscan.io/testnet/transaction/0xddfc63f2fa7e0b4802ebaee2cabca706a5806ecfe6d4e452e148d25114394966) · [issue](https://hashscan.io/testnet/transaction/0x8e76f822f113519d76a6e289fdeebac219e40b1fc087db94c1cf92ce0aa21251) · [NAV](https://hashscan.io/testnet/transaction/0xa4b344c46f264be88e61ddd2d8229f16b3868ae1615c840c6c2649d72d7faf84) |
-| Buy within the NAV band                 | [tx](https://hashscan.io/testnet/transaction/0x468186e314cbe2d3698934653a09c9661e76b93a67f80cf35791bfbb5a36da91)                                                                                                                                                                                                                                            |
-| Flash loan (borrow and repay 1 WHBAR)   | [tx](https://hashscan.io/testnet/transaction/0xf14fc08511e18cda7e338bc22a6b8bb4d0efd599a46ec2038711b1ce301763a9)                                                                                                                                                                                                                                            |
-| x402 settlement (fee paid by Blocky402) | [tx](https://hashscan.io/testnet/transaction/0.0.7162784-1791041416-286483229)                                                                                                                                                                                                                                                                              |
+|                                                         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| HCS audit topic                                         | [0.0.10843261](https://hashscan.io/testnet/topic/0.0.10843261)                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| RWA token (KYC key held by contract)                    | [0.0.10843354](https://hashscan.io/testnet/token/0.0.10843354)                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| RWA/USDC SaucerSwap pool                                | [0.0.10844831](https://hashscan.io/testnet/contract/0.0.10844831)                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Grant KYC → issue → post NAV                            | [KYC](https://hashscan.io/testnet/transaction/0xddfc63f2fa7e0b4802ebaee2cabca706a5806ecfe6d4e452e148d25114394966) · [issue](https://hashscan.io/testnet/transaction/0x8e76f822f113519d76a6e289fdeebac219e40b1fc087db94c1cf92ce0aa21251) · [NAV](https://hashscan.io/testnet/transaction/0xa4b344c46f264be88e61ddd2d8229f16b3868ae1615c840c6c2649d72d7faf84)                                                                                                                                                |
+| Buy within the NAV band                                 | [tx](https://hashscan.io/testnet/transaction/0x468186e314cbe2d3698934653a09c9661e76b93a67f80cf35791bfbb5a36da91)                                                                                                                                                                                                                                                                                                                                                                                           |
+| Flash loan (borrow and repay 1 WHBAR)                   | [tx](https://hashscan.io/testnet/transaction/0xf14fc08511e18cda7e338bc22a6b8bb4d0efd599a46ec2038711b1ce301763a9)                                                                                                                                                                                                                                                                                                                                                                                           |
+| x402 settlement (fee paid by Blocky402)                 | [tx](https://hashscan.io/testnet/transaction/0.0.7162784-1791041416-286483229)                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Borrow → network-run check → self-scheduled liquidation | [borrow](https://hashscan.io/testnet/transaction/0xa5513c7689c92121b247d9faafc053e1a539fc45dcd39e13360d799e266a6f62) · [schedule 1](https://hashscan.io/testnet/schedule/0.0.10853125) ([check](https://hashscan.io/testnet/transaction/0x8aed46ccd5fafb291782f0879a278f69cd4b9fac59a6d7c2260a013d6260ab80)) · [schedule 2](https://hashscan.io/testnet/schedule/0.0.10853138) ([liquidation](https://hashscan.io/testnet/transaction/0xa7ded9543efe9ed83b762eb43d83d414b1075dec15c7b4c7b7026179b6cd1267)) |
+| Pay with any token, merchant gets USDC                  | [tx](https://hashscan.io/testnet/transaction/0xb189df2d6b1000eee5cc909ccdebfa67c95a28ce96abd8c6d7dc96eae15c7051)                                                                                                                                                                                                                                                                                                                                                                                           |
 
 ## Configuration
 
@@ -108,6 +114,7 @@ packages/nextjs    app: one page per module, /api/audit, x402 routes
 - EVM accounts use ECDSA keys. JSON-RPC values are in weibars (10¹⁸ per HBAR); the SDK and x402 use tinybars (10⁸).
 - Testnet has two USDC tokens: SaucerSwap pools use `0.0.5449`, Circle's faucet mints `0.0.429274`.
 - Bonzo Lend is currently unusable for flash loans (testnet deposits revert, mainnet pool paused), so SaucerSwap flash swaps are the live provider.
+- `scheduleCall` (HIP-1215) costs about 1.41M gas whatever the scheduled call, while `eth_estimateGas` reports ~178k. Inside a scheduled call, `block.timestamp` can read slightly before the schedule's own expiry.
 - Atomic batches are not used for contract calls (restricted, removed in 2027), and hooks (HIP-1195) are not live yet.
 
 An HTS KYC key is used instead of ERC-3643 because the network enforces it on every transfer, including transfers that never touch these contracts.
@@ -116,7 +123,7 @@ An HTS KYC key is used instead of ERC-3643 because the network enforces it on ev
 
 Add a module with a manifest in `packages/shared/src/modules/<id>.ts`, contracts in `packages/hardhat/contracts/modules/<id>/`, a deploy step, a demo step and a page in `packages/nextjs/modules/<id>/`, then run `yarn configure`. Add a provider by implementing `IPriceOracle` or `ISwapAdapter` in `contracts/adapters/`. See [AGENTS.md](AGENTS.md) for the full conventions.
 
-Planned providers and modules: Supra and Chainlink Proof of Reserve oracles, other Hedera DEXs (Silk Suite, EtaSwap, Orbit), lending with HIP-1215 scheduled liquidations, a CDP stablecoin on RWA collateral, native staking, HashPack and Kabila wallets, and bridges (CCIP, Axelar, LayerZero).
+Planned providers and modules: Supra and Chainlink Proof of Reserve oracles, other Hedera DEXs (Silk Suite, EtaSwap, Orbit), a CDP stablecoin on RWA collateral, native staking, HashPack and Kabila wallets, and bridges (CCIP, Axelar, LayerZero).
 
 ## Development
 
