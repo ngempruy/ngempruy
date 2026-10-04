@@ -6,7 +6,8 @@ import { useAccount, useSendTransaction } from "wagmi";
 import { useTransactor } from "~~/hooks/scaffold-hbar";
 
 /** Hedera account 0.0.N as its long-zero EVM address. */
-const accountIdToAddress = (id: string) => `0x${BigInt(id.split(".")[2]).toString(16).padStart(40, "0")}` as Address;
+export const accountIdToAddress = (id: string) =>
+  `0x${BigInt(id.split(".")[2]).toString(16).padStart(40, "0")}` as Address;
 
 /** Pays HBAR straight from the connected EVM wallet (no facilitator, payer covers the fee). */
 export const DirectTransfer = ({ payTo }: { payTo: string }) => {

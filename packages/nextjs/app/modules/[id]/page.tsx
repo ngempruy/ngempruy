@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { missingEnvFor, modules } from "@sh/shared";
+import { integrations, missingEnv, missingEnvFor, modules } from "@sh/shared";
 import { ModuleSetupHint } from "~~/components/ModuleSetupHint";
 import { moduleMeta } from "~~/components/kit/moduleMeta";
 import { moduleViews } from "~~/modules";
@@ -22,6 +22,8 @@ export default async function ModulePage({ params }: Props) {
   const missing = missingEnvFor(mod.id, modules, process.env);
   const View = moduleViews[mod.id];
   const { icon: Icon, gradient, stack } = moduleMeta(mod.id);
+  // Recipes show their UI on the page of every module they compose.
+  const recipes = integrations.filter(r => r.when.includes(mod.id) && moduleViews[r.id]);
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-5 py-10">
@@ -45,6 +47,21 @@ export default async function ModulePage({ params }: Props) {
       </div>
       {missing.length > 0 && <ModuleSetupHint missing={missing} />}
       {View && <View ready={missing.length === 0} />}
+      {recipes.map(recipe => {
+        const RecipeView = moduleViews[recipe.id];
+        const ready = recipe.when.every(id => missingEnvFor(id, modules, process.env).length === 0);
+        return (
+          <section key={recipe.id} className="flex flex-col gap-4">
+            <div>
+              <h2 className="mb-1 text-2xl font-light tracking-tight">{recipe.title}</h2>
+              <p className="text-base-content/70 m-0 text-sm">
+                Recipe {recipe.when.join(" + ")}: {recipe.description}
+              </p>
+            </div>
+            <RecipeView ready={ready && missingEnv(recipe, process.env).length === 0} />
+          </section>
+        );
+      })}
     </div>
   );
 }

@@ -81,7 +81,9 @@ async function main() {
   for (const p of plan.paths) fs.rmSync(path.join(ROOT, p), { recursive: true, force: true });
   prunePackageJsons(plan.scripts, plan.dependencies);
   fs.writeFileSync(path.join(SHARED_SRC, "modules.config.ts"), renderModulesConfig(resolution));
-  const withViews = resolution.modules.map(m => m.id).filter(id => fs.existsSync(path.join(VIEWS_DIR, id, "index.ts")));
+  const withViews = [...resolution.modules, ...resolution.integrations]
+    .map(item => item.id)
+    .filter(id => fs.existsSync(path.join(VIEWS_DIR, id, "index.ts")));
   fs.writeFileSync(path.join(VIEWS_DIR, "index.tsx"), renderViewRegistry(withViews));
   fs.writeFileSync(ENV_EXAMPLE, renderEnvExample(fs.readFileSync(ENV_EXAMPLE, "utf8"), resolution.env));
   console.log("Done. Review with `git status`, then run `yarn install && yarn lint && yarn hardhat:test`.");
