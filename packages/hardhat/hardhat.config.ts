@@ -69,6 +69,8 @@ const config: HardhatUserConfig = {
   // directly to the Sourcify API v2. @nomicfoundation/hardhat-verify is intentionally not used:
   // its Hardhat 2-compatible line only speaks the Sourcify API v1, which Sourcify removed in
   // July 2026. See: https://docs.sourcify.dev/blog/api-v1-brownouts/
+  // Tests fork testnet through hashio, whose mirror-node upstream occasionally times out (-32020).
+  mocha: { retries: process.env.CI ? 2 : 0 },
   typechain: {
     outDir: "typechain-types",
     target: "ethers-v6",
