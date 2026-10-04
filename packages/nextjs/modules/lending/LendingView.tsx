@@ -4,6 +4,7 @@ import { useState } from "react";
 import { type Address, erc20Abi, formatUnits, parseUnits } from "viem";
 import { useAccount, useReadContract, useWriteContract } from "wagmi";
 import { hashscanUrl } from "@sh/shared";
+import { Small, Stat } from "~~/components/kit";
 import { useDeployedContractInfo, useScaffoldReadContract, useTransactor } from "~~/hooks/scaffold-hbar";
 import { recordAudit } from "~~/utils/recordAudit";
 
@@ -161,14 +162,3 @@ export const LendingView = () => {
     </div>
   );
 };
-
-const Small = ({ children }: { children: React.ReactNode }) => (
-  <span className="text-base-content/60 block text-xs font-normal">{children}</span>
-);
-
-const Stat = ({ label, children }: { label: string; children: React.ReactNode }) => (
-  <div className="bg-base-100 border-base-300 rounded-2xl border p-5">
-    <p className="text-base-content/60 m-0 text-xs uppercase tracking-wider">{label}</p>
-    <div className="mt-1 font-semibold">{children}</div>
-  </div>
-);
