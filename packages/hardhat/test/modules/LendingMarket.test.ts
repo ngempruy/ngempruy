@@ -79,6 +79,16 @@ describe("LendingMarket", function () {
     expect((await market.positions(alice.address)).debt).to.equal(2n * USDC);
   });
 
+  it("re-schedules even when Hedera's block time reads just before the schedule's expiry", async function () {
+    const { alice, hss, market } = await loadFixture(deployFixture);
+    await market.connect(alice).borrow(2n * USDC);
+    // block.timestamp is the record-file start, so a scheduled call can see expiry - 2s
+    await time.increase(INTERVAL - 3);
+
+    await expect(hss.execute(0)).to.emit(market, "CheckScheduled");
+    expect(await hss.count()).to.equal(2n);
+  });
+
   it("an early manual check neither liquidates a healthy loan nor double-schedules", async function () {
     const { alice, bob, hss, market } = await loadFixture(deployFixture);
     await market.connect(alice).borrow(2n * USDC);

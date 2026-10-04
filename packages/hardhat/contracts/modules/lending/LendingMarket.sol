@@ -39,6 +39,9 @@ contract LendingMarket is HtsAssociation, Ownable {
     /// ScheduleCreate price (~$0.10, about 1.5M gas on testnet), however small the scheduled call is.
     uint256 public constant CHECK_GAS = 2_000_000;
     uint256 private constant BPS = 10_000;
+    /// Hedera's block.timestamp is the start of the ~2s record file, so inside a scheduled call it can read
+    /// a second or two *before* the schedule's own expiry. A pending check this close counts as due.
+    uint256 private constant CLOCK_SLACK = 5;
 
     IERC20 public immutable collateral;
     uint8 public immutable collateralDecimals;
@@ -153,7 +156,7 @@ contract LendingMarket is HtsAssociation, Ownable {
         Position storage p = positions[msg.sender];
         p.debt += amount;
         _requireWithinLtv(p);
-        if (p.nextCheck <= block.timestamp) {
+        if (_checkDue(p)) {
             // A loan must never be left unmonitored.
             int64 code = _scheduleCheck(msg.sender);
             if (code != HTS_SUCCESS) revert ScheduleFailed(code);
@@ -176,7 +179,7 @@ contract LendingMarket is HtsAssociation, Ownable {
     /// (stale feed) never liquidates; the check is simply rescheduled.
     function checkPosition(address user) external {
         Position storage p = positions[user];
-        if (p.nextCheck <= block.timestamp) p.nextCheck = 0;
+        if (_checkDue(p)) p.nextCheck = 0;
         if (p.debt == 0) return;
 
         (bool priceAvailable, uint256 collateralUsd) = _tryCollateralUsd(p.collateral);
@@ -223,6 +226,11 @@ contract LendingMarket is HtsAssociation, Ownable {
         } else {
             emit CheckScheduleFailed(user, code);
         }
+    }
+
+    /// True when no check is pending, or the pending one is (about to be) running now.
+    function _checkDue(Position storage p) private view returns (bool) {
+        return p.nextCheck <= block.timestamp + CLOCK_SLACK;
     }
 
     function _requireWithinLtv(Position storage p) private view {
