@@ -13,6 +13,7 @@ jobs:
   checks:
     name: All modules
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -31,6 +32,7 @@ jobs:
   current-node:
     name: Build on Node 25
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -44,10 +46,11 @@ jobs:
   configure:
     name: Modules ${{ matrix.modules }}
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        modules: [rwa, payments, "rwa,payments", dex, "rwa,dex", "dex,payments", flashloan, lending]
+        modules: [core, rwa, payments, "rwa,payments", dex, "rwa,dex", "dex,payments", flashloan, lending]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -69,6 +72,7 @@ jobs:
     # The CLI downloads the template from GitHub, so only branches of this repo can be scaffolded.
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -108,6 +112,7 @@ jobs:
   harness:
     name: Hedera Harness validate
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
