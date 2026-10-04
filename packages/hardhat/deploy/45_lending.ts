@@ -7,7 +7,7 @@ import { LENDING_TESTNET } from "../utils/lending";
 const FEED_MAX_AGE = 86_400;
 /** 50% max LTV, liquidation above 80%, a scheduled health check every hour. */
 const RISK = { maxLtvBps: 5_000, liquidationThresholdBps: 8_000, checkInterval: 3_600 };
-/** HBAR the market keeps to pay for its own scheduled checks (~0.3 HBAR each). */
+/** HBAR the market keeps to pay for its own scheduled checks (~1.7 HBAR each). */
 const CHECK_BUDGET = "5";
 
 /** Lending: WHBAR-collateralised USDC loans with HIP-1215 scheduled health checks. Testnet only. */

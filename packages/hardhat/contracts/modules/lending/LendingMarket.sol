@@ -27,14 +27,17 @@ interface IHederaScheduleService {
 /// `checkPosition` call. A healthy position is re-checked one interval later; one past the liquidation
 /// threshold has its collateral seized into protocol reserves and its debt cleared, with no keeper or
 /// external liquidator needed.
-/// @dev The contract pays for its scheduled calls, so it must hold HBAR (send some to it). No interest
+/// @dev The contract pays for its scheduled calls (~1.7 HBAR each on testnet at CHECK_GAS), so it must
+/// hold HBAR: send some to it, `withdrawHbar` takes it back. No interest
 /// accrues; liquidity is supplied by the owner. Unaudited, testnet/education only.
 contract LendingMarket is HtsAssociation, Ownable {
     using SafeERC20 for IERC20;
 
     IHederaScheduleService private constant HSS = IHederaScheduleService(address(0x16b));
     int64 private constant HTS_SUCCESS = 22;
-    uint256 public constant CHECK_GAS = 400_000;
+    /// Gas for each scheduled check. It must cover rescheduling: a `scheduleCall` costs the canonical
+    /// ScheduleCreate price (~$0.10, about 1.5M gas on testnet), however small the scheduled call is.
+    uint256 public constant CHECK_GAS = 2_000_000;
     uint256 private constant BPS = 10_000;
 
     IERC20 public immutable collateral;
@@ -63,6 +66,7 @@ contract LendingMarket is HtsAssociation, Ownable {
     error ExceedsLtv(uint256 debtUsd, uint256 maxDebtUsd);
     error InsufficientLiquidity(uint256 available);
     error ScheduleFailed(int64 responseCode);
+    error HbarTransferFailed();
 
     event Deposited(address indexed user, uint256 amount);
     event Withdrawn(address indexed user, uint256 amount);
@@ -117,6 +121,12 @@ contract LendingMarket is HtsAssociation, Ownable {
     function withdrawReserves(uint256 amount) external onlyOwner {
         reserves -= amount;
         collateral.safeTransfer(msg.sender, amount);
+    }
+
+    /// Returns HBAR not needed for future scheduled checks.
+    function withdrawHbar(uint256 amount) external onlyOwner {
+        (bool ok, ) = payable(msg.sender).call{ value: amount }("");
+        if (!ok) revert HbarTransferFailed();
     }
 
     function deposit(uint256 amount) external {

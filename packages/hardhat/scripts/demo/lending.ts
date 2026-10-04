@@ -43,8 +43,8 @@ export default async function lendingDemo({ hre, send }: DemoContext) {
 
   const borrower = ethers.Wallet.createRandom().connect(ethers.provider);
   await send(
-    `fund borrower ${borrower.address} with 12 HBAR`,
-    owner.sendTransaction({ to: borrower.address, value: ethers.parseEther("12") }),
+    `fund borrower ${borrower.address} with 11 HBAR`,
+    owner.sendTransaction({ to: borrower.address, value: ethers.parseEther("11") }),
   );
   for (const [name, address] of [
     ["WHBAR", whbar],
@@ -62,7 +62,7 @@ export default async function lendingDemo({ hre, send }: DemoContext) {
   await send("borrower deposits 5 WHBAR of collateral", asBorrower.deposit(COLLATERAL, { gasLimit: 500_000 }), kit);
   await send(
     "borrower borrows 0.15 USDC (schedules a health check)",
-    asBorrower.borrow(LOAN, { gasLimit: 1_500_000 }),
+    asBorrower.borrow(LOAN, { gasLimit: 3_000_000 }),
     kit,
   );
 

@@ -144,6 +144,16 @@ describe("LendingMarket", function () {
     expect(await whbar.balanceOf(alice.address)).to.equal(920n * HBAR);
   });
 
+  it("holds HBAR for its scheduled checks and returns it to the owner", async function () {
+    const { owner, market } = await loadFixture(deployFixture);
+    const m = await market.getAddress();
+    await owner.sendTransaction({ to: m, value: ethers.parseEther("2") });
+    await expect(market.withdrawHbar(ethers.parseEther("1.5"))).to.changeEtherBalances(
+      [owner, market],
+      [ethers.parseEther("1.5"), -ethers.parseEther("1.5")],
+    );
+  });
+
   it("caps borrowing at the available liquidity", async function () {
     const { alice, market } = await loadFixture(deployFixture);
     await market.withdrawLiquidity(99n * USDC);
@@ -159,14 +169,16 @@ describe("LendingMarket", function () {
       "InvalidRiskParams",
     );
     await expect(market.setRiskParams(5_000, 8_000, 0)).to.be.revertedWithCustomError(market, "InvalidRiskParams");
+    const asAlice = market.connect(alice);
     for (const call of [
-      market.connect(alice).setRiskParams(5_000, 8_000, INTERVAL),
-      market.connect(alice).supplyLiquidity(1n),
-      market.connect(alice).withdrawLiquidity(1n),
-      market.connect(alice).withdrawReserves(1n),
-      market.connect(alice).associate(ethers.ZeroAddress),
+      () => asAlice.setRiskParams(5_000, 8_000, INTERVAL),
+      () => asAlice.supplyLiquidity(1n),
+      () => asAlice.withdrawLiquidity(1n),
+      () => asAlice.withdrawReserves(1n),
+      () => asAlice.associate(ethers.ZeroAddress),
+      () => asAlice.withdrawHbar(1n),
     ]) {
-      await expect(call).to.be.revertedWithCustomError(market, "OwnableUnauthorizedAccount");
+      await expect(call()).to.be.revertedWithCustomError(market, "OwnableUnauthorizedAccount");
     }
   });
 });
