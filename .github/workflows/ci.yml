@@ -47,7 +47,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        modules: [rwa, payments, "rwa,payments", dex, "rwa,dex", "dex,payments", flashloan]
+        modules: [rwa, payments, "rwa,payments", dex, "rwa,dex", "dex,payments", flashloan, lending]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -99,7 +99,7 @@ jobs:
         run: |
           $PM run next:serve &
           timeout 60 bash -c 'until curl -sf http://localhost:3000 >/dev/null; do sleep 2; done'
-          for route in / /modules/core /modules/rwa /modules/payments /modules/dex /modules/flashloan; do
+          for route in / /modules/core /modules/rwa /modules/payments /modules/dex /modules/flashloan /modules/lending; do
             # `|| exit` so any failing route fails the step, not only the last one
             curl -sf -o /dev/null "http://localhost:3000$route" || { echo "$route failed"; exit 1; }
             echo "$route OK"

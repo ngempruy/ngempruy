@@ -1,7 +1,7 @@
 /**
  * yarn demo: runs every module's demo step (scripts/demo/<module>.ts) against Hedera testnet,
  * printing a HashScan link per transaction and logging kit events to the HCS audit topic.
- * Needs a deployment first (`yarn hardhat:deploy --network hederaTestnet`).
+ * Needs a deployment first (`yarn hardhat:deploy --network hederaTestnet`). `DEMO_ONLY=<step,…>` limits the steps.
  */
 import type { BaseContract, ContractTransactionResponse, TransactionResponse } from "ethers";
 import * as fs from "fs";
@@ -47,9 +47,11 @@ async function main() {
     },
   };
 
+  // DEMO_ONLY=lending,dex+payments runs just those steps (e.g. when other modules aren't deployed by you).
+  const only = process.env.DEMO_ONLY?.split(",").map(s => s.trim());
   const steps = fs
     .readdirSync(path.join(__dirname, "demo"))
-    .filter(f => f.endsWith(".ts"))
+    .filter(f => f.endsWith(".ts") && (!only || only.includes(path.basename(f, ".ts"))))
     .sort();
   for (const file of steps) {
     console.log(`\n${path.basename(file, ".ts")}`);

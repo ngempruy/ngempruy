@@ -4,6 +4,7 @@ import coreView from "./core";
 import dexView from "./dex";
 import dex_paymentsView from "./dex+payments";
 import flashloanView from "./flashloan";
+import lendingView from "./lending";
 import paymentsView from "./payments";
 import rwaView from "./rwa";
 
@@ -14,5 +15,6 @@ export const moduleViews: Record<string, ComponentType<{ ready: boolean }>> = {
   dex: dexView,
   payments: paymentsView,
   flashloan: flashloanView,
+  lending: lendingView,
   "dex+payments": dex_paymentsView,
 };
