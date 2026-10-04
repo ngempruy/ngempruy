@@ -47,7 +47,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        modules: [rwa, payments, "rwa,payments", dex, "rwa,dex", flashloan]
+        modules: [rwa, payments, "rwa,payments", dex, "rwa,dex", "dex,payments", flashloan]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
