@@ -33,7 +33,7 @@ Requires Node.js ≥ 20.18.3 and Git. On-chain steps need a Hedera testnet accou
 ```bash
 yarn next:dev                                  # http://localhost:3000, no wallet or .env needed
 yarn hardhat:account:generate                  # or hardhat:account:import
-yarn hardhat:deploy --network hederaTestnet    # deploy the selected modules
+yarn hardhat:deploy:testnet                    # deploy the selected modules
 yarn demo                                      # run every module on testnet, print HashScan links
 ```
 

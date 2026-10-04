@@ -18,8 +18,8 @@
     "lint-staged": "eslint",
     "test": "HEDERA_FORKING=true REPORT_GAS=true hardhat test",
     "verify:contract": "ts-node scripts/verifySourcify.ts",
-    "dex:swap": "ts-node scripts/runHardhatDeployWithPK.ts run scripts/dexSwap.ts",
-    "flashloan:demo": "ts-node scripts/runHardhatDeployWithPK.ts run scripts/flashloanDemo.ts"
+    "dex:swap": "ts-node scripts/runHardhatDeployWithPK.ts run scripts/dexSwap.ts --network hederaTestnet",
+    "flashloan:demo": "ts-node scripts/runHardhatDeployWithPK.ts run scripts/flashloanDemo.ts --network hederaTestnet"
   },
   "devDependencies": {
     "@ethersproject/abi": "~5.7.0",

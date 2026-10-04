@@ -11,11 +11,32 @@ dotenv.config();
  * With `run <script>` as the first arguments it runs that script instead (`yarn script <path>`).
  * Non-interactive (CI, agents): a plain DEPLOYER_PRIVATE_KEY in the environment skips the password prompt.
  */
-async function main() {
-  const hardhatArgs = process.argv[2] === "run" ? process.argv.slice(2) : ["deploy", ...process.argv.slice(2)];
+/**
+ * Testnet-only scripts already carry `--network hederaTestnet`; a caller adding it again (`… -- --network
+ * hederaTestnet`) would make hardhat fail with HH309, so later copies of a flag are dropped.
+ */
+function dropRepeatedNetwork(args: string[]) {
+  const out: string[] = [];
+  let seen = false;
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === "--network") {
+      if (seen) {
+        i++; // skip the repeated flag and its value
+        continue;
+      }
+      seen = true;
+    }
+    out.push(args[i]);
+  }
+  return out;
+}
 
-  const networkIndex = process.argv.indexOf("--network");
-  const networkName = networkIndex !== -1 ? process.argv[networkIndex + 1] : config.defaultNetwork;
+async function main() {
+  const args = dropRepeatedNetwork(process.argv.slice(2));
+  const hardhatArgs = args[0] === "run" ? args : ["deploy", ...args];
+
+  const networkIndex = args.indexOf("--network");
+  const networkName = networkIndex !== -1 ? args[networkIndex + 1] : config.defaultNetwork;
 
   if (networkName === "localhost" || networkName === "hardhat") {
     // Deploy command on the localhost network

@@ -25,7 +25,7 @@
           "steps": [
             { "label": "Generate an ECDSA deployer account", "command": "{run:framework:account:generate}" },
             { "label": "Fund it with testnet HBAR", "url": "https://portal.hedera.com/faucet" },
-            { "label": "Deploy the selected modules", "command": "{run:framework:deploy} --network hederaTestnet" },
+            { "label": "Deploy the selected modules", "command": "{run:hardhat:deploy:testnet}" },
             { "text": "See README.md for module selection, env vars and the testnet demo." }
           ]
         }
