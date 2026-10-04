@@ -17,9 +17,18 @@ export const AuditFeed = async () => {
     );
   }
 
-  const res = await fetch(`${MIRROR}/api/v1/topics/${topicId}/messages?order=desc&limit=25`, { cache: "no-store" });
-  if (!res.ok) return <p className="text-error m-0 text-sm">Mirror node returned HTTP {res.status}.</p>;
-  const { messages } = (await res.json()) as { messages: MirrorMessage[] };
+  // The page must render even when the mirror node is slow or unreachable.
+  let messages: MirrorMessage[];
+  try {
+    const res = await fetch(`${MIRROR}/api/v1/topics/${topicId}/messages?order=desc&limit=25`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(8_000),
+    });
+    if (!res.ok) return <p className="text-error m-0 text-sm">Mirror node returned HTTP {res.status}.</p>;
+    ({ messages } = (await res.json()) as { messages: MirrorMessage[] });
+  } catch {
+    return <p className="text-error m-0 text-sm">Mirror node unreachable; reload to retry.</p>;
+  }
 
   return (
     <section className="flex flex-col gap-3">
