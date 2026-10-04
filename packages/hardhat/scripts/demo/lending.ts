@@ -117,15 +117,18 @@ async function waitFor(label: string, done: () => Promise<boolean>, timeoutMs = 
 
 /** The market's latest HIP-1215 schedules and when the network executed them (mirror node). */
 async function printScheduleExecutions(market: string, topic0: string) {
-  const logs = await fetch(`${MIRROR}/contracts/${market}/results/logs?topic0=${topic0}&order=desc&limit=2`);
-  if (!logs.ok) return;
-  const { logs: entries } = (await logs.json()) as { logs: { data: string }[] };
-  for (const { data } of entries) {
+  // The mirror node only filters by topic within a timestamp range, so filter recent logs here.
+  const res = await fetch(`${MIRROR}/contracts/${market}/results/logs?order=desc&limit=25`);
+  if (!res.ok) return;
+  const { logs } = (await res.json()) as { logs: { topics: string[]; data: string }[] };
+  for (const { data } of logs.filter(l => l.topics[0] === topic0).slice(0, 2)) {
     // CheckScheduled(user indexed, expirySecond, schedule): data = expirySecond ‖ schedule
     const scheduleId = `0.0.${BigInt(`0x${data.slice(2 + 64 + 24, 2 + 128)}`)}`;
-    const res = await fetch(`${MIRROR}/schedules/${scheduleId}`);
-    const schedule = res.ok ? ((await res.json()) as { executed_timestamp: string | null }) : undefined;
-    const executed = schedule?.executed_timestamp ? `executed at ${schedule.executed_timestamp}` : "pending";
-    console.log(`    schedule ${scheduleId} ${executed}: https://hashscan.io/testnet/schedule/${scheduleId}`);
+    const schedule = await fetch(`${MIRROR}/schedules/${scheduleId}`);
+    const { executed_timestamp } = schedule.ok
+      ? ((await schedule.json()) as { executed_timestamp: string | null })
+      : { executed_timestamp: null };
+    const status = executed_timestamp ? `executed at ${executed_timestamp}` : "pending";
+    console.log(`    schedule ${scheduleId} ${status}: https://hashscan.io/testnet/schedule/${scheduleId}`);
   }
 }
