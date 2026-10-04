@@ -15,7 +15,7 @@ yarn lint && yarn format:check && yarn next:check-types
 yarn next:build
 
 yarn hardhat:account:generate                # ECDSA deployer, encrypted in packages/hardhat/.env
-yarn hardhat:deploy --network hederaTestnet  # audit topic + selected modules
+yarn hardhat:deploy:testnet                  # audit topic + selected modules
 yarn demo                                    # every module's testnet flow, prints HashScan links
 yarn x402:pay [url]                          # agent pays an x402 endpoint (payments module)
 ```

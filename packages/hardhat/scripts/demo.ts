@@ -1,7 +1,7 @@
 /**
  * yarn demo: runs every module's demo step (scripts/demo/<module>.ts) against Hedera testnet,
  * printing a HashScan link per transaction and logging kit events to the HCS audit topic.
- * Needs a deployment first (`yarn hardhat:deploy --network hederaTestnet`). `DEMO_ONLY=<step,…>` limits the steps.
+ * Needs a deployment first (`yarn hardhat:deploy:testnet`). `DEMO_ONLY=<step,…>` limits the steps.
  */
 import type { BaseContract, ContractTransactionResponse, TransactionResponse } from "ethers";
 import * as fs from "fs";

@@ -53,7 +53,7 @@ You need a deployer account with HBAR on the target network. Without funds, depl
 3. **Deploy to Hedera testnet** (from repo root):
 
    ```bash
-   yarn hardhat:deploy --network hederaTestnet
+   yarn hardhat:deploy:testnet
    ```
 
    You will be prompted to enter the password to decrypt your deployer key (or export a plain `DEPLOYER_PRIVATE_KEY` to skip the prompt in CI).

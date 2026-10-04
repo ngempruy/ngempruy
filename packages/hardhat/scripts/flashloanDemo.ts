@@ -8,8 +8,8 @@ import { SAUCERSWAP_TESTNET } from "../utils/saucerswap";
  * repay with the 0.3% fee. One route has no arbitrage, so the owner covers the cost (fee + swap fees)
  * up to MAX_COST; with a real price gap you pass a positive minPnl instead.
  *
- *   yarn hardhat:deploy --network hederaTestnet --tags flashloan
- *   yarn hardhat:flashloan:demo --network hederaTestnet
+ *   yarn hardhat:deploy:testnet --tags flashloan   (npm: npm run hardhat:deploy:testnet -- --tags flashloan)
+ *   yarn hardhat:flashloan:demo
  */
 const LOAN = 100_000_000n; // 1 WHBAR (8 decimals)
 const MAX_COST = 5_000_000n; // 0.05 WHBAR

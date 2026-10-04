@@ -35,7 +35,7 @@
     {
       "id": "C5",
       "statement": "A funded test signer runs the RWA flow on testnet: a fresh investor associates, receives KYC, is issued units, and a NAV is posted, each with a HashScan link and an HCS audit entry.",
-      "howToVerify": "With DEPLOYER_PRIVATE_KEY exposed, run `yarn hardhat:deploy --network hederaTestnet` then `yarn demo`. Confirm five ✓ lines with hashscan.io/testnet links and 'audit #' lines, and that the mirror node shows the investor's kyc_status GRANTED with a non-zero balance.",
+      "howToVerify": "With DEPLOYER_PRIVATE_KEY exposed, run `yarn hardhat:deploy:testnet` then `yarn demo`. Confirm five ✓ lines with hashscan.io/testnet links and 'audit #' lines, and that the mirror node shows the investor's kyc_status GRANTED with a non-zero balance.",
       "severity": "critical",
       "walletRequired": true,
       "verifiableWithoutCredentials": false,
